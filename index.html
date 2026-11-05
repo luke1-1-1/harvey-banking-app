@@ -6,6 +6,7 @@
     <title>ApexBank E-Wallet & HARVEY AI</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0f19">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%234f46e5'/%3E%3Ctext x='50' y='68' font-size='62' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EA%3C/text%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830284.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -164,7 +165,7 @@
                     <button type="button" onclick="startVoiceInput()" class="w-9 h-9 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 flex items-center justify-center transition" title="Voice Input">
                         <i class="fa-solid fa-microphone text-xs"></i>
                     </button>
-                    <button type="submit" class="w-9 h-9 rounded-xl bg-brand-600 hover:bg-brand-500 text-white flex items-center justify-center transition shadow-md">
+                    <button type="submit" class="w-9 h-9 rounded-xl bg-brand-600 hover:bg-brand-500 disabled:opacity-50 disabled:cursor-not-allowed text-white flex items-center justify-center transition shadow-md">
                         <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
                 </form>
@@ -173,9 +174,8 @@
     </main>
 
     <script>
-        // --- SECURE SPLIT GEMINI API KEY ---
-        const GEMINI_API_KEY = "AQ.Ab8RN6K" + "saurJ06RTRhVWin-nIFcSqzhpa7o5l1OIQtOlGdueFg";
-
+        // Set this to the Cloudflare Worker URL after deploying worker.js.
+        const HARVEY_API_URL = "https://YOUR-WORKER-NAME.YOUR-SUBDOMAIN.workers.dev";
         let state = {
             balance: 14567.22,
             pensionReceived: true,
@@ -230,7 +230,7 @@
             alert(`Opening ${action.toUpperCase()} secure module in ApexPay.`);
         }
 
-        // --- LIVE GEMINI API INTEGRATION (CORRECTED ENDPOINT) ---
+        // --- HARVEY AI (secure server-side Gemini proxy) ---
         async function handleHarveySubmit(e) {
             e.preventDefault();
             const input = document.getElementById('harveyInput');
@@ -239,7 +239,8 @@
 
             appendHarveyMessage(question, 'user');
             input.value = '';
-
+            const submitButton = document.querySelector('#harveyForm button[type="submit"]');
+            if (submitButton) submitButton.disabled = true;
             const typingId = showHarveyTyping();
 
             try {
@@ -248,60 +249,67 @@
                 appendHarveyMessage(aiResponse, 'ai');
                 speakText(aiResponse);
             } catch (err) {
-                console.warn("API live call failed, using smart fallback:", err);
+                console.error('HARVEY request failed:', err);
                 removeHarveyTyping(typingId);
-                const fallbackReply = getSmartFallbackResponse(question);
+                const fallbackReply = getSmartFallbackResponse(question, err.message);
                 appendHarveyMessage(fallbackReply, 'ai');
                 speakText(fallbackReply);
+            } finally {
+                if (submitButton) submitButton.disabled = false;
+                input.focus();
             }
         }
 
         function sendQuickPrompt(text) {
+            const form = document.getElementById('harveyForm');
             document.getElementById('harveyInput').value = text;
-            document.getElementById('harveyForm').dispatchEvent(new Event('submit', { cancelable: true }));
+            form.requestSubmit();
         }
 
         async function fetchGeminiResponse(userQuestion) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
-            const prompt = `
-You are HARVEY, an intelligent financial AI voice assistant inside an e-wallet banking app named ApexPay.
-Answer concisely in 1 to 3 short sentences max.
+            if (HARVEY_API_URL.includes('YOUR-WORKER-NAME')) {
+                throw new Error('Set HARVEY_API_URL in index.html to your deployed Cloudflare Worker URL.');
+            }
 
-Current User Account Context:
-- Account Holder: Alex Morgan
-- Total Balance: $${state.balance.toFixed(2)}
-- Pension Received Today: ${state.pensionReceived ? '$4,000.00 SSS Pension at 8:00 AM' : 'No'}
-- Recent Transactions: ${JSON.stringify(state.transactions.slice(0, 3).map(t => ({ title: t.title, amount: t.amount, type: t.type })))}
+            const accountContext = {
+                accountHolder: 'Alex Morgan',
+                balance: state.balance,
+                pensionReceived: state.pensionReceived,
+                transactions: state.transactions.slice(0, 4).map(tx => ({
+                    title: tx.title,
+                    amount: tx.amount,
+                    type: tx.type
+                }))
+            };
 
-User Question: "${userQuestion}"
-            `;
-
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            const response = await fetch(HARVEY_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: userQuestion, accountContext })
             });
 
-            if (!response.ok) throw new Error(`Gemini HTTP Error: ${response.status}`);
-            const data = await response.json();
-            if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
-                return data.candidates[0].content.parts[0].text.trim();
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(data.error || `HARVEY service returned HTTP ${response.status}.`);
             }
-            throw new Error("Invalid Gemini response format");
+            if (typeof data.reply !== 'string' || !data.reply.trim()) {
+                throw new Error('HARVEY service returned an empty answer.');
+            }
+            return data.reply.trim();
         }
 
-        function getSmartFallbackResponse(q) {
+        function getSmartFallbackResponse(q, errorMessage = '') {
             const lower = q.toLowerCase();
             if (lower.includes('pension')) {
-                return "Yes Alex! Your $4,000.00 SSS Pension direct deposit was successfully credited to your Apex Platinum Wallet today at 8:00 AM.";
-            } else if (lower.includes('balance') || lower.includes('money') || lower.includes('how much')) {
-                return `Looking at your balance of $${state.balance.toFixed(2)}, you are in great financial standing to handle your expenses!`;
-            } else if (lower.includes('playstation') || lower.includes('ps5')) {
-                return "A brand new PlayStation 5 Slim retails around $499.99 (approx. ₱40,000). With your $14,567.22 balance, you can easily cover this purchase!";
+                return `According to this demo account's sample data, the $4,000.00 SSS pension is marked as received today at 8:00 AM. ${errorMessage ? 'The AI service is currently unavailable.' : ''}`.trim();
             }
-            return `Based on your account balance of $${state.balance.toFixed(2)}, your account is secure. Feel free to ask any other questions!`;
+            if (lower.includes('balance') || lower.includes('money') || lower.includes('how much')) {
+                return `The balance shown in this demo is $${state.balance.toFixed(2)}. This is sample app data, not a live bank balance. ${errorMessage ? 'The AI service is currently unavailable.' : ''}`.trim();
+            }
+            if (lower.includes('playstation') || lower.includes('ps5')) {
+                return 'I cannot check current PlayStation prices while the AI service is unavailable. Please try again when HARVEY reconnects.';
+            }
+            return `HARVEY could not connect to its AI service. ${errorMessage || 'Please check the Worker URL and server configuration, then try again.'}`;
         }
 
         function startVoiceInput() {
@@ -338,11 +346,25 @@ User Question: "${userQuestion}"
             const isUser = sender === 'user';
             const row = document.createElement('div');
             row.className = `flex items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
-            const avatar = isUser 
-                ? `<div class="w-7 h-7 rounded-lg bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold">AM</div>`
-                : `<div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div>`;
 
-            row.innerHTML = avatar + `<div class="glass-panel p-3 rounded-2xl ${isUser ? 'rounded-tr-none bg-brand-600/20' : 'rounded-tl-none'} max-w-[85%] text-slate-200 leading-relaxed shadow-sm">${text}</div>`;
+            const avatar = document.createElement('div');
+            avatar.className = isUser
+                ? 'w-7 h-7 rounded-lg bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold'
+                : 'w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]';
+            if (isUser) {
+                avatar.textContent = 'AM';
+            } else {
+                const brainIcon = document.createElement('i');
+                brainIcon.className = 'fa-solid fa-brain';
+                avatar.appendChild(brainIcon);
+            }
+
+            const bubble = document.createElement('div');
+            bubble.className = `glass-panel p-3 rounded-2xl ${isUser ? 'rounded-tr-none bg-brand-600/20' : 'rounded-tl-none'} max-w-[85%] text-slate-200 leading-relaxed shadow-sm whitespace-pre-wrap break-words`;
+            bubble.textContent = String(text ?? '');
+
+            row.appendChild(avatar);
+            row.appendChild(bubble);
             feed.appendChild(row);
             feed.scrollTop = feed.scrollHeight;
         }
