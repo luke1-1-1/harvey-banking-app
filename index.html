@@ -130,7 +130,7 @@
                     <div>
                         <div class="flex items-center space-x-1.5">
                             <h3 class="font-bold text-sm text-white">HARVEY Voice & AI Guide</h3>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">v2.1</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">v2.2</span>
                         </div>
                         <p class="text-[10px] text-slate-400">Risk Verification & Banking Assistant</p>
                     </div>
@@ -227,10 +227,10 @@
         }
 
         function openModal(action) {
-            alert(`Opening ${action.toUpperCase()} secure module in ApexPay.`);
+            alert(`Opening ${action.toUpperCase()} secure module inApexPay.`);
         }
 
-        // --- LIVE GEMINI API INTEGRATION & SMART FALLBACK ---
+        // --- LIVE GEMINI API INTEGRATION (QUERY PARAMETER AUTH) ---
         async function handleHarveySubmit(e) {
             e.preventDefault();
             const input = document.getElementById('harveyInput');
@@ -262,7 +262,7 @@
         }
 
         async function fetchGeminiResponse(userQuestion) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
             const prompt = `
 You are HARVEY, an intelligent financial AI voice assistant inside an e-wallet banking app named ApexPay.
 Answer concisely in 1 to 3 short sentences max.
@@ -279,8 +279,7 @@ User Question: "${userQuestion}"
             const response = await fetch(url, {
                 method: "POST",
                 headers: { 
-                    "Content-Type": "application/json",
-                    "x-goog-api-key": GEMINI_API_KEY
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
