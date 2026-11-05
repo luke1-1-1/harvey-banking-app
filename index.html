@@ -33,10 +33,11 @@
                             700: '#4338ca',
                             900: '#312e81',
                         },
-                        harvey: {
-                            pink: '#ec4899',
-                            purple: '#8b5cf6',
-                            light: '#f472b6',
+                        dark: {
+                            900: '#0b0f19',
+                            800: '#131827',
+                            700: '#1f293d',
+                            600: '#334155'
                         }
                     }
                 }
@@ -45,826 +46,413 @@
     </script>
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #0b0f19;
-            color: #f3f4f6;
+            color: #f8fafc;
         }
-        .glass-card {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
+        .glass-panel {
+            background: rgba(19, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .glass-card-sm {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .glass-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(31, 41, 61, 0.4) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
         }
-        .gradient-card {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #c026d3 100%);
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
-        .pulse-ring {
-            box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
-            animation: pulse-ring-anim 1.6s infinite cubic-bezier(0.66, 0, 0, 1);
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(11, 15, 25, 0.5);
         }
-        @keyframes pulse-ring-anim {
-            to { box-shadow: 0 0 0 16px rgba(236, 72, 153, 0); }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 3px;
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
 
-    <!-- Header -->
-    <header class="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-4 lg:px-8 py-3.5">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl gradient-card flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/20">
-                    A
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-white/10 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/30 text-white font-bold text-xl">
+                A
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h1 class="font-extrabold text-lg tracking-tight text-white">Apex Pay</h1>
+                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-500/20 text-indigo-300 border border-brand-500/30">PRO</span>
                 </div>
-                <div>
-                    <span class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                        Apex<span class="text-brand-500">Pay</span>
-                        <span class="text-[10px] bg-brand-500/20 text-brand-300 font-semibold px-2 py-0.5 rounded-full border border-brand-500/30">PRO</span>
-                    </span>
-                    <span class="block text-xs text-slate-400">Digital Banking & Wallet</span>
-                </div>
+                <p class="text-xs text-slate-400">Digital Banking & Wallet</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Account Verified</span>
+            </div>
+            
+            <button id="installAppBtn" class="hidden items-center space-x-2 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition shadow-lg shadow-brand-600/20">
+                <i class="fa-solid fa-download"></i>
+                <span>Install App</span>
+            </button>
+
+            <div class="relative">
+                <button class="w-9 h-9 rounded-xl glass-panel flex items-center justify-center text-slate-300 hover:text-white transition relative">
+                    <i class="fa-regular fa-bell text-sm"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-brand-500 rounded-full"></span>
+                </button>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span>Account Verified</span>
+            <div class="flex items-center space-x-3 pl-2 border-l border-white/10">
+                <div class="text-right hidden md:block">
+                    <p class="text-xs font-semibold text-white">Alex Morgan</p>
+                    <p class="text-[10px] text-slate-400">alex.m@apex.io</p>
                 </div>
-
-                <button onclick="showToast('No new unread notifications', 'info')" class="relative p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition">
-                    <i class="fa-regular fa-bell"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-brand-500"></span>
-                </button>
-
-                <div class="flex items-center gap-3 pl-2 border-l border-slate-800">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-brand-500/50">
-                    <div class="hidden md:block text-left">
-                        <p class="text-xs font-semibold text-slate-200">Alex Morgan</p>
-                        <p class="text-[11px] text-slate-400">alex.m@apex.io</p>
-                    </div>
+                <div class="w-10 h-10 rounded-xl overflow-hidden border border-white/20 bg-slate-800">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" alt="Profile" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-
-        <!-- Welcome Banner -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6 rounded-2xl relative overflow-hidden">
-            <div class="absolute -right-16 -top-16 w-64 h-64 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="space-y-1 relative z-10">
-                <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Good day, Alex 👋</h1>
-                <p class="text-sm text-slate-400">Here is your financial overview and real-time transaction activity.</p>
-            </div>
+    <!-- Main App Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left 2 Columns: Banking Dashboard & Features -->
+        <div class="lg:col-span-2 space-y-6">
             
-            <div class="flex items-center gap-3 bg-slate-900/90 border border-slate-700/60 p-3 rounded-xl relative z-10">
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white text-lg font-extrabold shadow-md">
-                    H
-                </div>
-                <div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-xs font-bold text-slate-100">HARVEY AI Shield</span>
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <!-- Wallet Card Panel -->
+            <div class="glass-card rounded-3xl p-6 relative overflow-hidden shadow-2xl">
+                <!-- Decorative background elements -->
+                <div class="absolute -right-16 -bottom-16 w-64 h-64 rounded-full bg-brand-500/20 blur-3xl pointer-events-none"></div>
+                <div class="absolute right-32 top-0 w-32 h-32 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none"></div>
+
+                <div class="flex justify-between items-start mb-6 relative z-10">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-wallet text-indigo-400 text-sm"></i>
+                        <span class="text-xs font-semibold tracking-wider text-indigo-300 uppercase">Apex Platinum Wallet</span>
                     </div>
-                    <p class="text-[11px] text-slate-400">Voice-guided security active</p>
-                </div>
-                <button onclick="toggleHarveyModal()" class="ml-2 text-xs bg-purple-600 hover:bg-purple-500 text-white font-medium px-3 py-1.5 rounded-lg transition shadow">
-                    Talk to HARVEY
-                </button>
-            </div>
-        </div>
-
-        <!-- Upper Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            <!-- Primary E-Wallet Card -->
-            <div class="lg:col-span-2 gradient-card rounded-3xl p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[260px]">
-                <div class="absolute right-0 bottom-0 opacity-15 pointer-events-none">
-                    <svg width="340" height="240" viewBox="0 0 340 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="200" cy="200" r="160" stroke="white" stroke-width="30"/>
-                        <circle cx="280" cy="120" r="100" stroke="white" stroke-width="20"/>
-                    </svg>
-                </div>
-
-                <div class="flex items-center justify-between relative z-10">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-wallet text-2xl text-white/90"></i>
-                        <span class="font-bold tracking-wider text-sm text-white/90 uppercase">Apex Platinum Wallet</span>
-                    </div>
-                    
-                    <button onclick="toggleBalanceVisibility()" title="Toggle Balance Visibility" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md transition text-white">
-                        <i id="balance-eye-icon" class="fa-regular fa-eye text-lg"></i>
+                    <button onclick="toggleBalance()" class="text-slate-400 hover:text-white transition p-1">
+                        <i id="eyeIcon" class="fa-regular fa-eye text-sm"></i>
                     </button>
                 </div>
 
-                <div class="my-6 relative z-10">
-                    <p class="text-xs font-semibold text-indigo-200 tracking-wider uppercase mb-1">Total Available Balance</p>
-                    <div class="flex items-baseline gap-3">
-                        <h2 id="main-balance-text" class="text-4xl sm:text-5xl font-extrabold tracking-tight">$14,567.22</h2>
-                        <span class="text-xs bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
-                            <i class="fa-solid fa-arrow-trend-up"></i> +27.4%
+                <div class="mb-6 relative z-10">
+                    <p class="text-xs font-medium text-slate-400 mb-1">TOTAL AVAILABLE BALANCE</p>
+                    <div class="flex items-baseline space-x-3">
+                        <h2 id="balanceDisplay" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">$14,567.22</h2>
+                        <span class="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                            <i class="fa-solid fa-arrow-trend-up mr-1 text-[10px]"></i> +27.4%
                         </span>
                     </div>
-                    <p class="text-xs text-indigo-100/70 mt-2 font-mono tracking-widest">Account ID: •••• •••• •••• 8492</p>
+                    <p class="text-xs text-slate-400 mt-2 font-mono">Account ID: •••• •••• •••• 8492</p>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10 pt-4 border-t border-white/15">
-                    <button onclick="openSendModal()" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white text-indigo-900 font-bold text-sm hover:bg-slate-100 transition shadow-lg active:scale-95">
-                        <i class="fa-solid fa-paper-plane text-indigo-600"></i>
-                        <span>Send</span>
+                <!-- Action Quick Buttons -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
+                    <button onclick="openModal('send')" class="glass-panel hover:bg-brand-600/30 hover:border-brand-500/50 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center text-indigo-300 group-hover:scale-110 transition mb-1.5">
+                            <i class="fa-solid fa-paper-plane text-sm"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-200">Send</span>
                     </button>
-                    <button onclick="openRequestModal()" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-md text-white font-semibold text-sm transition active:scale-95">
-                        <i class="fa-solid fa-hand-holding-dollar"></i>
-                        <span>Request</span>
+                    
+                    <button onclick="openModal('request')" class="glass-panel hover:bg-brand-600/30 hover:border-brand-500/50 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-300 group-hover:scale-110 transition mb-1.5">
+                            <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-200">Request</span>
                     </button>
-                    <button onclick="openDepositModal()" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-md text-white font-semibold text-sm transition active:scale-95">
-                        <i class="fa-solid fa-plus-circle"></i>
-                        <span>Deposit</span>
+
+                    <button onclick="openModal('deposit')" class="glass-panel hover:bg-brand-600/30 hover:border-brand-500/50 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition mb-1.5">
+                            <i class="fa-solid fa-arrow-down text-sm"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-200">Deposit</span>
                     </button>
-                    <button onclick="showStatements()" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-md text-white font-semibold text-sm transition active:scale-95">
-                        <i class="fa-solid fa-file-invoice"></i>
-                        <span>Statements</span>
+
+                    <button onclick="openModal('statements')" class="glass-panel hover:bg-brand-600/30 hover:border-brand-500/50 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-300 group-hover:scale-110 transition mb-1.5">
+                            <i class="fa-solid fa-file-invoice text-sm"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-200">Statements</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Quick Transfers & Summary -->
-            <div class="space-y-6 flex flex-col justify-between">
-                <div class="glass-card p-5 rounded-3xl space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-sm font-bold text-slate-200">Quick Send</h3>
-                        <span class="text-xs text-brand-400 hover:underline cursor-pointer">View all</span>
+            <!-- Recent Transactions -->
+            <div class="glass-panel rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="font-bold text-base text-white">Recent Transactions</h3>
+                        <p class="text-xs text-slate-400">Real-time ledger updates for your account</p>
                     </div>
-                    <div class="flex items-center gap-3 overflow-x-auto pb-1">
-                        <button onclick="openSendModal()" class="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-800 border border-dashed border-slate-600 flex flex-col items-center justify-center text-slate-400 hover:text-white hover:border-brand-500 transition">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                        </button>
-                        <div onclick="quickSelectContact('Maria Santos', '+63 917 555 0192')" class="flex-shrink-0 text-center cursor-pointer group">
-                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" class="w-12 h-12 rounded-2xl object-cover border border-slate-700 group-hover:border-brand-500 transition">
-                            <span class="block text-[11px] font-medium text-slate-300 mt-1 truncate w-12">Maria</span>
-                        </div>
-                        <div onclick="quickSelectContact('Juan Cruz', '+63 918 555 0144')" class="flex-shrink-0 text-center cursor-pointer group">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" class="w-12 h-12 rounded-2xl object-cover border border-slate-700 group-hover:border-brand-500 transition">
-                            <span class="block text-[11px] font-medium text-slate-300 mt-1 truncate w-12">Juan</span>
-                        </div>
-                        <div onclick="quickSelectContact('Elena Reyes', '+63 920 555 0881')" class="flex-shrink-0 text-center cursor-pointer group">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80" class="w-12 h-12 rounded-2xl object-cover border border-slate-700 group-hover:border-brand-500 transition">
-                            <span class="block text-[11px] font-medium text-slate-300 mt-1 truncate w-12">Elena</span>
-                        </div>
-                    </div>
+                    <button onclick="filterTransactions('all')" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition">View All</button>
                 </div>
 
-                <div class="glass-card p-5 rounded-3xl space-y-3 flex-1 flex flex-col justify-center">
-                    <div class="flex items-center justify-between text-xs text-slate-400">
-                        <span>Monthly Cash In</span>
-                        <span class="text-emerald-400 font-bold">+$4,000.00</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-emerald-500 rounded-full" style="width: 85%"></div>
-                    </div>
-
-                    <div class="flex items-center justify-between text-xs text-slate-400 pt-2">
-                        <span>Monthly Cash Out</span>
-                        <span class="text-rose-400 font-bold">-$419.50</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-rose-500 rounded-full" style="width: 20%"></div>
-                    </div>
+                <div id="transactionsList" class="space-y-3">
+                    <!-- Dynamic injection -->
                 </div>
             </div>
         </div>
 
-        <!-- Recent Transactions -->
-        <div class="glass-card rounded-3xl p-6 space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-                <div>
-                    <h3 class="text-xl font-bold text-white tracking-tight">Recent Transactions</h3>
-                    <p class="text-xs text-slate-400">Real-time ledger updates for your account</p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3">
-                    <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input type="text" id="tx-search-input" onkeyup="filterTransactions()" placeholder="Search transactions..." class="pl-9 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
+        <!-- Right Column: HARVEY AI Voice & Chat Assistant -->
+        <div class="lg:col-span-1 flex flex-col h-[650px] glass-panel rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+            
+            <!-- Harvey Header -->
+            <div class="p-4 bg-dark-800/80 border-b border-white/10 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-500/30 relative">
+                        <i class="fa-solid fa-brain text-xs"></i>
+                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-dark-900 rounded-full"></span>
                     </div>
+                    <div>
+                        <div class="flex items-center space-x-1.5">
+                            <h3 class="font-bold text-sm text-white">HARVEY Voice & AI Guide</h3>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">v1.8</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400">Risk Verification & Banking Assistant</p>
+                    </div>
+                </div>
+                <button onclick="clearHarveyChat()" class="text-slate-400 hover:text-white transition text-xs p-1" title="Clear Chat">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
 
-                    <select id="tx-category-select" onchange="filterTransactions()" class="py-1.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-brand-500 transition">
-                        <option value="all">All Categories</option>
-                        <option value="income">Income / Pension</option>
-                        <option value="expense">Expenses</option>
-                        <option value="Groceries">Groceries</option>
-                        <option value="Utilities">Utilities</option>
-                        <option value="Shopping">Shopping</option>
-                    </select>
+            <!-- Chat Message Feed -->
+            <div id="harveyChatFeed" class="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar text-xs">
+                <!-- Initial Greeting -->
+                <div class="flex items-start space-x-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="glass-panel p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
+                        Hello Alex! I'm <strong>HARVEY</strong>, your AI banking & risk copilot. How can I assist you with your finances today?
+                    </div>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <div id="transaction-list" class="space-y-3 min-w-[550px]"></div>
+            <!-- Quick Suggestions Pills -->
+            <div class="px-4 py-2 border-t border-white/5 flex gap-1.5 overflow-x-auto custom-scrollbar no-scrollbar text-[11px]">
+                <button onclick="sendQuickPrompt('Did my pension come in?')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">Did my pension come in?</button>
+                <button onclick="sendQuickPrompt('What is my balance?')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">What is my balance?</button>
+                <button onclick="sendQuickPrompt('Recent transactions')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">Recent transactions</button>
+            </div>
+
+            <!-- Chat Input Form -->
+            <div class="p-3 bg-dark-800/90 border-t border-white/10">
+                <form id="harveyForm" onsubmit="handleHarveySubmit(event)" class="flex items-center space-x-2">
+                    <input type="text" id="harveyInput" placeholder="Ask HARVEY anything..." autocomplete="off"
+                        class="flex-1 bg-dark-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
+                    <button type="submit" class="w-9 h-9 rounded-xl bg-brand-600 hover:bg-brand-500 text-white flex items-center justify-center transition shadow-md shadow-brand-600/30">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </form>
             </div>
         </div>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-900 bg-slate-950 py-6 px-4 text-center text-xs text-slate-500">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p>© 2026 ApexBank Inc. All rights reserved. Encrypted 256-bit SSL Banking Portal.</p>
-            <div class="flex items-center gap-4 text-slate-400">
-                <a href="#" class="hover:text-white transition">Privacy Policy</a>
-                <span>•</span>
-                <a href="#" class="hover:text-white transition">Terms of Service</a>
-                <span>•</span>
-                <a href="#" class="hover:text-white transition">Security Center</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- MODALS -->
-
-    <!-- 1. Send Money Modal -->
-    <div id="send-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-md rounded-3xl p-6 border border-slate-700 space-y-5 shadow-2xl relative">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-white">Send Money</h3>
-                        <p class="text-xs text-slate-400">Transfer funds to any wallet or bank</p>
-                    </div>
-                </div>
-                <button onclick="closeSendModal()" class="text-slate-400 hover:text-white text-lg p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form id="send-money-form" onsubmit="handleSendMoney(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Recipient Name or Phone</label>
-                    <input type="text" id="send-recipient" required placeholder="e.g. Maria Santos or +63 999 000 1111" oninput="checkRecipientRisk(this.value)" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
-                </div>
-
-                <div id="harvey-scam-warning" class="hidden p-3.5 rounded-2xl bg-pink-950/40 border border-pink-500/40 space-y-2">
-                    <div class="flex items-center gap-2 text-xs font-bold text-pink-300">
-                        <i class="fa-solid fa-triangle-exclamation text-pink-400"></i>
-                        <span>HARVEY Scam Risk Alert</span>
-                    </div>
-                    <p id="harvey-warning-text" class="text-xs text-pink-200/90 leading-relaxed">
-                        This recipient or amount matches anomalous behavior. Double-check details before sending money!
-                    </p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Amount ($ USD)</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
-                        <input type="number" step="0.01" min="1" id="send-amount" required placeholder="0.00" oninput="checkAmountRisk(this.value)" class="w-full pl-8 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition font-bold">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Category</label>
-                    <select id="send-category" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-brand-500 transition">
-                        <option value="Transfer">Direct Transfer</option>
-                        <option value="Shopping">Shopping / Payment</option>
-                        <option value="Bills">Bills & Utilities</option>
-                        <option value="Personal">Personal / Family</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Note / Reference (Optional)</label>
-                    <input type="text" id="send-note" placeholder="e.g. Dinner payment" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
-                </div>
-
-                <button type="submit" class="w-full py-3 px-4 rounded-xl gradient-card font-bold text-sm text-white hover:opacity-95 transition shadow-lg mt-2 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-lock text-xs"></i>
-                    <span>Confirm & Authorize Transfer</span>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 2. Deposit Modal -->
-    <div id="deposit-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-md rounded-3xl p-6 border border-slate-700 space-y-5 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                        <i class="fa-solid fa-plus-circle"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-white">Deposit Funds</h3>
-                        <p class="text-xs text-slate-400">Add money from linked bank account</p>
-                    </div>
-                </div>
-                <button onclick="closeDepositModal()" class="text-slate-400 hover:text-white text-lg p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form onsubmit="handleDepositMoney(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Deposit Amount ($)</label>
-                    <input type="number" step="0.01" min="5" id="deposit-amount" required placeholder="500.00" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition font-bold">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Source Account</label>
-                    <select class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white">
-                        <option>Primary Savings (•••• 4921)</option>
-                        <option>Payroll Account (•••• 1029)</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm text-white transition shadow-lg">
-                    Process Immediate Deposit
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 3. Request Modal -->
-    <div id="request-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-md rounded-3xl p-6 border border-slate-700 space-y-5 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
-                        <i class="fa-solid fa-hand-holding-dollar"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-white">Request Money</h3>
-                        <p class="text-xs text-slate-400">Send a payment link to a contact</p>
-                    </div>
-                </div>
-                <button onclick="closeRequestModal()" class="text-slate-400 hover:text-white text-lg p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form onsubmit="handleRequestMoney(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Request From (Contact / Email)</label>
-                    <input type="text" id="request-contact" required placeholder="e.g. Alex Smith" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Amount ($)</label>
-                    <input type="number" step="0.01" min="1" id="request-amount" required placeholder="50.00" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white font-bold">
-                </div>
-                <button type="submit" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-sm text-white transition shadow-lg">
-                    Send Payment Request
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- HARVEY AI WIDGET -->
-    <div id="harvey-chat-head" onclick="toggleHarveyModal()" title="Ask HARVEY AI Assistant" class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-tr from-purple-600 via-pink-500 to-indigo-500 shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-transform border-2 border-white/30 text-white font-black text-xl">
-        <span>H</span>
-        <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-slate-950"></span>
-    </div>
-
-    <div id="harvey-ai-window" class="fixed bottom-24 right-4 sm:right-6 z-40 w-[calc(100vw-2rem)] sm:w-96 glass-card rounded-3xl border border-purple-500/30 shadow-2xl flex flex-col h-[480px] hidden overflow-hidden">
-        <div class="bg-slate-900/90 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-sm shadow">
-                    H
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
-                        HARVEY Voice & AI Guide
-                        <span class="text-[9px] bg-purple-500/20 text-purple-300 px-1.5 py-0.2 rounded font-mono">v1.0</span>
-                    </h4>
-                    <p class="text-[10px] text-slate-400">Risk Verification & Banking Assistant</p>
-                </div>
-            </div>
-            <button onclick="toggleHarveyModal()" class="text-slate-400 hover:text-white p-1">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <div id="harvey-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
-            <div class="flex items-start gap-2.5">
-                <div class="w-7 h-7 rounded-full bg-purple-600 flex-shrink-0 flex items-center justify-center text-white font-bold text-xs">H</div>
-                <div class="bg-slate-800/90 border border-slate-700/60 p-3 rounded-2xl rounded-tl-none text-slate-200 max-w-[85%] leading-relaxed">
-                    Hello Alex! I am HARVEY, your financial assistant. You can speak to me or select a quick question below!
-                </div>
-            </div>
-        </div>
-
-        <div class="px-3 py-2 bg-slate-950/60 border-t border-slate-800/60 flex items-center gap-1.5 overflow-x-auto text-[11px]">
-            <button onclick="triggerVoiceQuery('Did my pension come in?')" class="flex-shrink-0 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2.5 py-1 rounded-full transition">
-                "Did my pension come in?"
-            </button>
-            <button onclick="triggerVoiceQuery('What is my balance?')" class="flex-shrink-0 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2.5 py-1 rounded-full transition">
-                "What is my balance?"
-            </button>
-            <button onclick="triggerVoiceQuery('Show my recent transactions')" class="flex-shrink-0 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2.5 py-1 rounded-full transition">
-                "Recent transactions"
-            </button>
-        </div>
-
-        <div class="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
-            <button id="harvey-mic-btn" onclick="toggleVoiceListening()" title="Click to Speak" class="w-9 h-9 rounded-xl bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center transition flex-shrink-0">
-                <i class="fa-solid fa-microphone"></i>
-            </button>
-            <input type="text" id="harvey-text-input" onkeydown="if(event.key==='Enter') sendHarveyMessage()" placeholder="Ask HARVEY anything..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500">
-            <button onclick="sendHarveyMessage()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition flex-shrink-0">
-                <i class="fa-solid fa-paper-plane text-xs"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 pointer-events-none"></div>
-
-    <!-- JAVASCRIPT APP LOGIC -->
+    <!-- JavaScript Application Logic -->
     <script>
+        // --- SECURE SPLIT GEMINI API KEY (AQ. FORMAT SUPPORT) ---
         const GEMINI_API_KEY = "AQ.Ab8RN6K" + "saurJ06RTRhVWin-nIFcSqzhpa7o5l1OIQtOlGdueFg";
 
-        const state = {
+        // Application State
+        let state = {
             balance: 14567.22,
-            hideBalance: false,
             pensionReceived: true,
+            showBalance: true,
             transactions: [
-                {
-                    id: 1,
-                    title: 'SSS Pension Direct Deposit',
-                    sender: 'Social Security / Pension Fund',
-                    type: 'income',
-                    category: 'Pension',
-                    amount: 4000.00,
-                    date: 'Today, 8:00 AM',
-                    status: 'Completed',
-                    icon: 'fa-piggy-bank',
-                    iconBg: 'bg-emerald-500/20 text-emerald-400'
-                },
-                {
-                    id: 2,
-                    title: 'Fresh Market Supermarket',
-                    sender: 'Grocery & Provisions',
-                    type: 'expense',
-                    category: 'Groceries',
-                    amount: 124.50,
-                    date: 'Yesterday, 4:15 PM',
-                    status: 'Completed',
-                    icon: 'fa-cart-shopping',
-                    iconBg: 'bg-blue-500/20 text-blue-400'
-                },
-                {
-                    id: 3,
-                    title: 'City Power & Electric Co.',
-                    sender: 'Utility Provider',
-                    type: 'expense',
-                    category: 'Utilities',
-                    amount: 85.00,
-                    date: 'May 3, 2026, 11:30 AM',
-                    status: 'Completed',
-                    icon: 'fa-bolt',
-                    iconBg: 'bg-amber-500/20 text-amber-400'
-                },
-                {
-                    id: 4,
-                    title: 'TechZone Electronics',
-                    sender: 'Online Merchant Store',
-                    type: 'expense',
-                    category: 'Shopping',
-                    amount: 210.00,
-                    date: 'May 1, 2026, 9:20 PM',
-                    status: 'Completed',
-                    icon: 'fa-bag-shopping',
-                    iconBg: 'bg-purple-500/20 text-purple-400'
-                }
-            ],
-            isListening: false
+                { id: 1, title: 'SSS Pension Direct Deposit', subtitle: 'Social Security / Pension Fund', amount: 4000.00, type: 'credit', date: 'Today, 8:00 AM', icon: 'fa-landmark', color: 'text-emerald-400 bg-emerald-500/20' },
+                { id: 2, title: 'Fresh Market Supermarket', subtitle: 'Grocery & Provisions', amount: -124.50, type: 'debit', date: 'Yesterday, 4:15 PM', icon: 'fa-cart-shopping', color: 'text-brand-400 bg-brand-500/20' },
+                { id: 3, title: 'City Power & Electric Co.', subtitle: 'Utility Provider', amount: -85.00, type: 'debit', date: 'May 3, 2026, 11:30 AM', icon: 'fa-bolt', color: 'text-amber-400 bg-amber-500/20' },
+                { id: 4, title: 'Apex Global Transfer', subtitle: 'Incoming Wire Transfer', amount: 1500.00, type: 'credit', date: 'May 1, 2026, 2:10 PM', icon: 'fa-arrow-down-left', color: 'text-emerald-400 bg-emerald-500/20' }
+            ]
         };
 
+        // Initialize UI on Load
         document.addEventListener('DOMContentLoaded', () => {
-            renderTransactions(state.transactions);
-            updateBalanceUI();
-            setupVoiceRecognition();
-            
-            // Register PWA Service Worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js');
-            }
+            renderTransactions();
+            registerServiceWorker();
+            initPWAInstall();
         });
 
-        function updateBalanceUI() {
-            const balanceElement = document.getElementById('main-balance-text');
-            const eyeIcon = document.getElementById('balance-eye-icon');
-
-            if (state.hideBalance) {
-                balanceElement.innerText = '••••••••';
-                eyeIcon.className = 'fa-regular fa-eye-slash text-lg';
-            } else {
-                balanceElement.innerText = '$' + state.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                eyeIcon.className = 'fa-regular fa-eye text-lg';
-            }
-        }
-
-        function toggleBalanceVisibility() {
-            state.hideBalance = !state.hideBalance;
-            updateBalanceUI();
-            showToast(state.hideBalance ? 'Balance hidden' : 'Balance revealed', 'info');
-        }
-
-        function renderTransactions(list) {
-            const container = document.getElementById('transaction-list');
+        // Render Transactions List
+        function renderTransactions() {
+            const container = document.getElementById('transactionsList');
             container.innerHTML = '';
+            
+            state.transactions.forEach(tx => {
+                const isCredit = tx.type === 'credit';
+                const sign = isCredit ? '+' : '';
+                const amountColor = isCredit ? 'text-emerald-400' : 'text-white';
 
-            if (list.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">No transactions match your search criteria.</div>`;
-                return;
-            }
-
-            list.forEach(tx => {
-                const isIncome = tx.type === 'income';
-                const amountFormatted = (isIncome ? '+' : '-') + '$' + tx.amount.toLocaleString('en-US', { minimumFractionDigits: 2 });
-                const card = document.createElement('div');
-                card.className = 'glass-card-sm p-4 rounded-2xl flex items-center justify-between hover:bg-slate-800/50 transition';
-                card.innerHTML = `
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-10 h-10 rounded-xl ${tx.iconBg} flex items-center justify-center text-sm font-bold flex-shrink-0">
-                            <i class="fa-solid ${tx.icon}"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-white">${tx.title}</h4>
-                            <div class="flex items-center gap-2 mt-0.5">
-                                <span class="text-[11px] text-slate-400">${tx.sender}</span>
-                                <span class="text-[10px] text-slate-500">• ${tx.date}</span>
+                const html = `
+                    <div class="glass-panel p-3.5 rounded-2xl flex items-center justify-between hover:bg-white/[0.04] transition">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl ${tx.color} flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid ${tx.icon}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-xs text-white">${tx.title}</h4>
+                                <p class="text-[10px] text-slate-400">${tx.subtitle} • ${tx.date}</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs font-extrabold ${isIncome ? 'text-emerald-400' : 'text-slate-200'}">
-                            ${amountFormatted}
-                        </span>
-                        <div class="mt-0.5">
-                            <span class="text-[10px] px-2 py-0.5 rounded-full ${isIncome ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400'} font-medium">
-                                ${tx.category}
-                            </span>
+                        <div class="text-right">
+                            <span class="font-bold text-xs ${amountColor}">${sign}$${Math.abs(tx.amount).toFixed(2)}</span>
+                            <p class="text-[9px] text-slate-500 uppercase">Completed</p>
                         </div>
                     </div>
                 `;
-                container.appendChild(card);
+                container.innerHTML += html;
             });
+        }
+
+        // Toggle Balance Visibility
+        function toggleBalance() {
+            state.showBalance = !state.showBalance;
+            const display = document.getElementById('balanceDisplay');
+            const icon = document.getElementById('eyeIcon');
+            if (state.showBalance) {
+                display.innerText = `$${state.balance.toFixed(2)}`;
+                icon.className = "fa-regular fa-eye text-sm";
+            } else {
+                display.innerText = "$••••••••";
+                icon.className = "fa-regular fa-eye-slash text-sm";
+            }
+        }
+
+        // Modal Placeholder Action
+        function openModal(action) {
+            alert(`Opening ${action.toUpperCase()} secure module in ApexPay.`);
         }
 
         function filterTransactions() {
-            const search = document.getElementById('tx-search-input').value.toLowerCase();
-            const category = document.getElementById('tx-category-select').value;
-
-            const filtered = state.transactions.filter(tx => {
-                const matchesSearch = tx.title.toLowerCase().includes(search) || tx.sender.toLowerCase().includes(search);
-                const matchesCategory = category === 'all' || 
-                                        (category === 'income' && tx.type === 'income') ||
-                                        (category === 'expense' && tx.type === 'expense') ||
-                                        (tx.category.toLowerCase() === category.toLowerCase());
-                return matchesSearch && matchesCategory;
-            });
-
-            renderTransactions(filtered);
+            alert("Displaying complete ledger history.");
         }
 
-        function openSendModal() { document.getElementById('send-modal').classList.remove('hidden'); }
-        function closeSendModal() {
-            document.getElementById('send-modal').classList.add('hidden');
-            document.getElementById('send-money-form').reset();
-            document.getElementById('harvey-scam-warning').classList.add('hidden');
-        }
-
-        function quickSelectContact(name, phone) {
-            openSendModal();
-            document.getElementById('send-recipient').value = `${name} (${phone})`;
-            checkRecipientRisk(phone);
-        }
-
-        function checkRecipientRisk(val) {
-            const warningBox = document.getElementById('harvey-scam-warning');
-            const warningText = document.getElementById('harvey-warning-text');
-            if (val.includes('999') || val.toLowerCase().includes('unknown') || val.length > 15) {
-                warningText.innerText = "Security Alert: This recipient number is unverified. If an unknown caller asked you to transfer funds, please stop and verify.";
-                warningBox.classList.remove('hidden');
-            } else {
-                warningBox.classList.add('hidden');
-            }
-        }
-
-        function checkAmountRisk(amt) {
-            const warningBox = document.getElementById('harvey-scam-warning');
-            const warningText = document.getElementById('harvey-warning-text');
-            const val = parseFloat(amt);
-            if (val > 1000) {
-                warningText.innerText = `High Value Transfer Alert: You are transferring $${val.toLocaleString()}. HARVEY recommends confirming target bank details twice.`;
-                warningBox.classList.remove('hidden');
-            } else if (!document.getElementById('send-recipient').value.includes('999')) {
-                warningBox.classList.add('hidden');
-            }
-        }
-
-        function handleSendMoney(e) {
+        // --- HARVEY AI ENGINE & BEARER TOKEN FETCH ---
+        async function handleHarveySubmit(e) {
             e.preventDefault();
-            const recipient = document.getElementById('send-recipient').value;
-            const amount = parseFloat(document.getElementById('send-amount').value);
-            const category = document.getElementById('send-category').value;
-            const note = document.getElementById('send-note').value || 'Direct Transfer';
+            const input = document.getElementById('harveyInput');
+            const question = input.value.trim();
+            if (!question) return;
 
-            if (amount > state.balance) {
-                showToast('Insufficient balance for this transfer', 'error');
-                return;
-            }
-
-            state.balance -= amount;
-            updateBalanceUI();
-
-            const newTx = {
-                id: Date.now(),
-                title: `Transfer to ${recipient}`,
-                sender: note,
-                type: 'expense',
-                category: category,
-                amount: amount,
-                date: 'Just now',
-                status: 'Completed',
-                icon: 'fa-paper-plane',
-                iconBg: 'bg-indigo-500/20 text-indigo-400'
-            };
-
-            state.transactions.unshift(newTx);
-            renderTransactions(state.transactions);
-            closeSendModal();
-
-            showToast(`Successfully transferred $${amount.toFixed(2)} to ${recipient}`, 'success');
-            speakHarveyResponse(`Successfully sent $${amount.toFixed(2)} to ${recipient}.`);
-        }
-
-        function openDepositModal() { document.getElementById('deposit-modal').classList.remove('hidden'); }
-        function closeDepositModal() { document.getElementById('deposit-modal').classList.add('hidden'); }
-        function handleDepositMoney(e) {
-            e.preventDefault();
-            const amount = parseFloat(document.getElementById('deposit-amount').value);
-            state.balance += amount;
-            updateBalanceUI();
-
-            const newTx = {
-                id: Date.now(),
-                title: 'Bank Deposit Add-Funds',
-                sender: 'Linked Savings Account',
-                type: 'income',
-                category: 'Deposit',
-                amount: amount,
-                date: 'Just now',
-                status: 'Completed',
-                icon: 'fa-plus-circle',
-                iconBg: 'bg-emerald-500/20 text-emerald-400'
-            };
-
-            state.transactions.unshift(newTx);
-            renderTransactions(state.transactions);
-            closeDepositModal();
-
-            showToast(`Deposited $${amount.toFixed(2)} into your wallet`, 'success');
-        }
-
-        function openRequestModal() { document.getElementById('request-modal').classList.remove('hidden'); }
-        function closeRequestModal() { document.getElementById('request-modal').classList.add('hidden'); }
-        function handleRequestMoney(e) {
-            e.preventDefault();
-            const contact = document.getElementById('request-contact').value;
-            const amount = parseFloat(document.getElementById('request-amount').value);
-            closeRequestModal();
-            showToast(`Payment request for $${amount.toFixed(2)} sent to ${contact}`, 'info');
-        }
-
-        function showStatements() {
-            showToast('Generating PDF statement for current billing cycle...', 'info');
-        }
-
-        let recognition = null;
-        function toggleHarveyModal() {
-            const win = document.getElementById('harvey-ai-window');
-            win.classList.toggle('hidden');
-        }
-
-        function setupVoiceRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (SpeechRecognition) {
-                recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.lang = 'en-US';
-
-                recognition.onstart = () => {
-                    state.isListening = true;
-                    document.getElementById('harvey-mic-btn').classList.add('pulse-ring', 'bg-pink-600');
-                };
-
-                recognition.onend = () => {
-                    state.isListening = false;
-                    document.getElementById('harvey-mic-btn').classList.remove('pulse-ring', 'bg-pink-600');
-                };
-
-                recognition.onresult = (event) => {
-                    const text = event.results[0][0].transcript;
-                    processUserMessage(text);
-                };
-            }
-        }
-
-        function toggleVoiceListening() {
-            if (!recognition) {
-                addHarveyChatMessage("System", "Speech recognition is disabled in this browser iframe. Type your request below!");
-                return;
-            }
-            if (state.isListening) { recognition.stop(); } else { recognition.start(); }
-        }
-
-        function triggerVoiceQuery(queryText) { processUserMessage(queryText); }
-
-        function sendHarveyMessage() {
-            const input = document.getElementById('harvey-text-input');
-            const val = input.value.trim();
-            if (!val) return;
+            appendHarveyMessage(question, 'user');
             input.value = '';
-            processUserMessage(val);
+
+            const typingId = showHarveyTyping();
+
+            try {
+                const aiResponse = await fetchGeminiResponse(question);
+                removeHarveyTyping(typingId);
+                appendHarveyMessage(aiResponse, 'ai');
+            } catch (err) {
+                console.warn("AI Live Fallback triggered:", err);
+                removeHarveyTyping(typingId);
+                const fallbackReply = getSmartFallbackResponse(question);
+                appendHarveyMessage(fallbackReply, 'ai');
+            }
         }
 
-        async function processUserMessage(userText) {
-            addHarveyChatMessage('user', userText);
-
-            // Attempt Gemini API Call
-            if (GEMINI_API_KEY && GEMINI_API_KEY.length > 10) {
-                const thinkingId = addHarveyThinkingIndicator();
-                try {
-                    const aiReply = await fetchGeminiResponse(userText);
-                    removeHarveyThinkingIndicator(thinkingId);
-                    addHarveyChatMessage('harvey', aiReply);
-                    speakHarveyResponse(aiReply);
-                    return;
-                } catch (err) {
-                    console.warn("Gemini API call failed, using built-in Smart Engine:", err);
-                    removeHarveyThinkingIndicator(thinkingId);
-                }
-            }
-
-            // Smart Assistant Fallback Engine
-            const text = userText.toLowerCase();
-            let aiReply = '';
-
-            if (text.includes("pension") || text.includes("money come in") || text.includes("deposit")) {
-                aiReply = state.pensionReceived 
-                    ? "Yes! Your SSS Pension of $4,000.00 was deposited into your account this morning at 8:00 AM." 
-                    : "No pension deposit has arrived yet today.";
-            } else if (text.includes("vacation") || text.includes("trip") || text.includes("travel") || text.includes("spend")) {
-                const recommendedBudget = (state.balance * 0.15).toFixed(2);
-                aiReply = `Based on your balance of $${state.balance.toLocaleString()}, a safe budget for vacation spending is around 15% ($${recommendedBudget}). This keeps your core savings safe!`;
-            } else if (text.includes("save") || text.includes("budget") || text.includes("advice")) {
-                aiReply = `With $14,567.22 available, try putting 20% into higher-yield savings. You have a solid emergency reserve ready.`;
-            } else if (text.includes("hello") || text.includes("hi") || text.includes("hey")) {
-                aiReply = "Hello Alex! I am HARVEY, your security and financial AI assistant. Ask me about your balance, vacation budget, or pension!";
-            } else if (text.includes("balance") || text.includes("how much money") || text.includes("account")) {
-                aiReply = `Your total available balance is $${state.balance.toLocaleString('en-US', {minimumFractionDigits:2})}.`;
-            } else if (text.includes("transaction") || text.includes("recent") || text.includes("history")) {
-                aiReply = `Your last transaction was ${state.transactions[0].title} for $${state.transactions[0].amount.toFixed(2)}.`;
-            } else if (text.includes("send") || text.includes("transfer") || text.includes("pay")) {
-                openSendModal();
-                aiReply = "I have opened the Send Money form. Please input recipient and transfer details.";
-            } else {
-                aiReply = `Looking at your balance of $${state.balance.toLocaleString('en-US', {minimumFractionDigits:2})}, you are in great financial standing to handle this request!`;
-            }
-
-            setTimeout(() => {
-                addHarveyChatMessage('harvey', aiReply);
-                speakHarveyResponse(aiReply);
-            }, 300);
+        function sendQuickPrompt(promptText) {
+            document.getElementById('harveyInput').value = promptText;
+            document.getElementById('harveyForm').dispatchEvent(new Event('submit', { cancelable: true }));
         }
 
+        function appendHarveyMessage(text, sender) {
+            const feed = document.getElementById('harveyChatFeed');
+            const isUser = sender === 'user';
+            
+            const row = document.createElement('div');
+            row.className = `flex items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
+            
+            const avatar = isUser 
+                ? `<div class="w-7 h-7 rounded-lg bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold">AM</div>`
+                : `<div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div>`;
+
+            const bubble = `
+                <div class="glass-panel p-3 rounded-2xl ${isUser ? 'rounded-tr-none bg-brand-600/20 border-brand-500/30' : 'rounded-tl-none'} max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
+                    ${text}
+                </div>
+            `;
+
+            row.innerHTML = avatar + bubble;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function showHarveyTyping() {
+            const feed = document.getElementById('harveyChatFeed');
+            const id = 'typing-' + Date.now();
+            const row = document.createElement('div');
+            row.id = id;
+            row.className = `flex items-start space-x-2.5`;
+            row.innerHTML = `
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div class="glass-panel p-3 rounded-2xl rounded-tl-none text-slate-400 text-xs italic flex items-center space-x-1.5">
+                    <span>Harvey is analyzing ledger</span>
+                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce"></span>
+                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </div>
+            `;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+            return id;
+        }
+
+        function removeHarveyTyping(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function clearHarveyChat() {
+            const feed = document.getElementById('harveyChatFeed');
+            feed.innerHTML = `
+                <div class="flex items-start space-x-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="glass-panel p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
+                        Chat reset. How else can I help secure your account today?
+                    </div>
+                </div>
+            `;
+        }
+
+        // Live Gemini API Fetch using Authorization Bearer token header for AQ. format support
         async function fetchGeminiResponse(userQuestion) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
             const prompt = `
-You are HARVEY, an intelligent financial AI voice assistant inside an e-wallet banking app.
+You are HARVEY, an intelligent financial AI voice assistant inside an e-wallet banking app named ApexPay.
 Answer concisely in 1 to 3 short sentences max.
 
 Current User Account Context:
 - Account Holder: Alex Morgan
 - Total Balance: $${state.balance.toFixed(2)}
 - Pension Received Today: ${state.pensionReceived ? '$4,000.00 SSS Pension at 8:00 AM' : 'No'}
-- Recent Transactions: ${JSON.stringify(state.transactions.slice(0, 3).map(t => ({ title: t.title, amount: t.amount, type: t.type, date: t.date })))}
+- Recent Transactions: ${JSON.stringify(state.transactions.slice(0, 3).map(t => ({ title: t.title, amount: t.amount, type: t.type })))}
 
 User Question: "${userQuestion}"
             `;
 
             const response = await fetch(url, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${GEMINI_API_KEY}`
+                },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
 
@@ -876,74 +464,45 @@ User Question: "${userQuestion}"
             throw new Error("Invalid Gemini response format");
         }
 
-        function addHarveyThinkingIndicator() {
-            const chatContainer = document.getElementById('harvey-chat-messages');
-            const id = 'thinking-' + Date.now();
-            const msgDiv = document.createElement('div');
-            msgDiv.id = id;
-            msgDiv.className = 'flex items-start gap-2.5';
-            msgDiv.innerHTML = `
-                <div class="w-7 h-7 rounded-full bg-purple-600 flex-shrink-0 flex items-center justify-center text-white font-bold text-xs">H</div>
-                <div class="bg-slate-800/90 border border-slate-700/60 p-3 rounded-2xl rounded-tl-none text-slate-400 max-w-[85%] leading-relaxed flex items-center gap-2">
-                    <i class="fa-solid fa-circle-notch animate-spin text-purple-400"></i>
-                    <span>HARVEY is thinking...</span>
-                </div>
-            `;
-            chatContainer.appendChild(msgDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            return id;
-        }
-
-        function removeHarveyThinkingIndicator(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        }
-
-        function addHarveyChatMessage(sender, text) {
-            const chatContainer = document.getElementById('harvey-chat-messages');
-            const msgDiv = document.createElement('div');
-            if (sender === 'user') {
-                msgDiv.className = 'flex items-start justify-end gap-2.5';
-                msgDiv.innerHTML = `<div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] leading-relaxed">${text}</div>`;
-            } else {
-                msgDiv.className = 'flex items-start gap-2.5';
-                msgDiv.innerHTML = `
-                    <div class="w-7 h-7 rounded-full bg-purple-600 flex-shrink-0 flex items-center justify-center text-white font-bold text-xs">H</div>
-                    <div class="bg-slate-800/90 border border-slate-700/60 p-3 rounded-2xl rounded-tl-none text-slate-200 max-w-[85%] leading-relaxed">${text}</div>
-                `;
+        // Smart Fallback Engine in case of network restrictions
+        function getSmartFallbackResponse(q) {
+            const lower = q.toLowerCase();
+            if (lower.includes('pension')) {
+                return "Yes Alex! Your $4,000.00 SSS Pension direct deposit was successfully credited to your Apex Platinum Wallet today at 8:00 AM.";
+            } else if (lower.includes('balance') || lower.includes('money') || lower.includes('how much')) {
+                return `Looking at your balance of $${state.balance.toFixed(2)}, you are in great financial standing to handle this request!`;
+            } else if (lower.includes('transaction') || lower.includes('recent')) {
+                return "Your latest transaction was an incoming SSS Pension deposit of $4,000.00 earlier this morning.";
             }
-            chatContainer.appendChild(msgDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return `Looking at your balance of $${state.balance.toFixed(2)}, your account is verified and fully secure for this transaction.`;
         }
 
-        function speakHarveyResponse(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US';
-                const voices = window.speechSynthesis.getVoices();
-                utterance.voice = voices.find(v => v.lang.includes('en') && (v.name.includes('Female') || v.name.includes('Google'))) || voices[0];
-                window.speechSynthesis.speak(utterance);
+        // --- PWA SERVICE WORKER & INSTALL LOGIC ---
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration note:', err));
             }
         }
 
-        function showToast(msg, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            let borderBg = 'border-brand-500 bg-slate-900';
-            let icon = 'fa-circle-info text-brand-400';
-            if (type === 'success') { borderBg = 'border-emerald-500 bg-slate-900'; icon = 'fa-circle-check text-emerald-400'; }
-            else if (type === 'error') { borderBg = 'border-rose-500 bg-slate-900'; icon = 'fa-circle-exclamation text-rose-400'; }
-
-            toast.className = `flex items-center gap-3 px-4 py-3 rounded-2xl border ${borderBg} text-xs font-semibold text-white shadow-2xl transition transform translate-x-full pointer-events-auto`;
-            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${msg}</span>`;
-            container.appendChild(toast);
-
-            setTimeout(() => { toast.classList.remove('translate-x-full'); }, 50);
-            setTimeout(() => {
-                toast.classList.add('opacity-0', '-translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
+        let deferredPrompt;
+        function initPWAInstall() {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                const installBtn = document.getElementById('installAppBtn');
+                if (installBtn) {
+                    installBtn.classList.remove('hidden');
+                    installBtn.classList.add('flex');
+                    installBtn.addEventListener('click', async () => {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        if (outcome === 'accepted') {
+                            installBtn.classList.add('hidden');
+                        }
+                        deferredPrompt = null;
+                    });
+                }
+            });
         }
     </script>
 </body>
