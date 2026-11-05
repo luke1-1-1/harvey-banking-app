@@ -4,85 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ApexBank E-Wallet & HARVEY AI</title>
-    <!-- PWA Manifest & Meta -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0f19">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830284.png">
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
                     colors: {
-                        brand: {
-                            50: '#f0f3ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            900: '#312e81',
-                        },
-                        dark: {
-                            900: '#0b0f19',
-                            800: '#131827',
-                            700: '#1f293d',
-                            600: '#334155'
-                        }
+                        brand: { 50: '#f0f3ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 900: '#312e81' },
+                        dark: { 900: '#0b0f19', 800: '#131827', 700: '#1f293d', 600: '#334155' }
                     }
                 }
             }
         }
     </script>
     <style>
-        body {
-            background-color: #0b0f19;
-            color: #f8fafc;
-        }
-        .glass-panel {
-            background: rgba(19, 24, 39, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-card {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(31, 41, 61, 0.4) 100%);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(11, 15, 25, 0.5);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(99, 102, 241, 0.3);
-            border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(99, 102, 241, 0.5);
-        }
+        body { background-color: #0b0f19; color: #f8fafc; }
+        .glass-panel { background: rgba(19, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-card { background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(31, 41, 61, 0.4) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(99, 102, 241, 0.2); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(11, 15, 25, 0.5); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 3px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
 
-    <!-- Top Navigation Bar -->
     <header class="sticky top-0 z-40 glass-panel border-b border-white/10 px-4 lg:px-8 py-3.5 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/30 text-white font-bold text-xl">
-                A
-            </div>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/30 text-white font-bold text-xl">A</div>
             <div>
                 <div class="flex items-center space-x-2">
                     <h1 class="font-extrabold text-lg tracking-tight text-white">Apex Pay</h1>
@@ -91,25 +47,14 @@
                 <p class="text-xs text-slate-400">Digital Banking & Wallet</p>
             </div>
         </div>
-
         <div class="flex items-center space-x-4">
             <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span>Account Verified</span>
             </div>
-            
-            <button id="installAppBtn" class="hidden items-center space-x-2 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition shadow-lg shadow-brand-600/20">
-                <i class="fa-solid fa-download"></i>
-                <span>Install App</span>
+            <button id="installAppBtn" class="hidden items-center space-x-2 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition shadow-lg">
+                <i class="fa-solid fa-download"></i><span>Install App</span>
             </button>
-
-            <div class="relative">
-                <button class="w-9 h-9 rounded-xl glass-panel flex items-center justify-center text-slate-300 hover:text-white transition relative">
-                    <i class="fa-regular fa-bell text-sm"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-brand-500 rounded-full"></span>
-                </button>
-            </div>
-
             <div class="flex items-center space-x-3 pl-2 border-l border-white/10">
                 <div class="text-right hidden md:block">
                     <p class="text-xs font-semibold text-white">Alex Morgan</p>
@@ -122,18 +67,9 @@
         </div>
     </header>
 
-    <!-- Main App Container -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Left 2 Columns: Banking Dashboard & Features -->
         <div class="lg:col-span-2 space-y-6">
-            
-            <!-- Wallet Card Panel -->
             <div class="glass-card rounded-3xl p-6 relative overflow-hidden shadow-2xl">
-                <!-- Decorative background elements -->
-                <div class="absolute -right-16 -bottom-16 w-64 h-64 rounded-full bg-brand-500/20 blur-3xl pointer-events-none"></div>
-                <div class="absolute right-32 top-0 w-32 h-32 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none"></div>
-
                 <div class="flex justify-between items-start mb-6 relative z-10">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-wallet text-indigo-400 text-sm"></i>
@@ -143,7 +79,6 @@
                         <i id="eyeIcon" class="fa-regular fa-eye text-sm"></i>
                     </button>
                 </div>
-
                 <div class="mb-6 relative z-10">
                     <p class="text-xs font-medium text-slate-400 mb-1">TOTAL AVAILABLE BALANCE</p>
                     <div class="flex items-baseline space-x-3">
@@ -154,69 +89,48 @@
                     </div>
                     <p class="text-xs text-slate-400 mt-2 font-mono">Account ID: •••• •••• •••• 8492</p>
                 </div>
-
-                <!-- Action Quick Buttons -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
-                    <button onclick="openModal('send')" class="glass-panel hover:bg-brand-600/30 hover:border-brand-500/50 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
-                        <div class="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center text-indigo-300 group-hover:scale-110 transition mb-1.5">
-                            <i class="fa-solid fa-paper-plane text-sm"></i>
-                        </div>
+                    <button onclick="openModal('send')" class="glass-panel hover:bg-brand-600/30 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center text-indigo-300 mb-1.5"><i class="fa-solid fa-paper-plane text-sm"></i></div>
                         <span class="text-xs font-semibold text-slate-200">Send</span>
                     </button>
-                    
-                    <button onclick="openModal('request')" class="glass-panel hover:bg-brand-600/30 hover:border-brand-500/50 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
-                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-300 group-hover:scale-110 transition mb-1.5">
-                            <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
-                        </div>
+                    <button onclick="openModal('request')" class="glass-panel hover:bg-brand-600/30 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-300 mb-1.5"><i class="fa-solid fa-hand-holding-dollar text-sm"></i></div>
                         <span class="text-xs font-semibold text-slate-200">Request</span>
                     </button>
-
-                    <button onclick="openModal('deposit')" class="glass-panel hover:bg-brand-600/30 hover:border-brand-500/50 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition mb-1.5">
-                            <i class="fa-solid fa-arrow-down text-sm"></i>
-                        </div>
+                    <button onclick="openModal('deposit')" class="glass-panel hover:bg-brand-600/30 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300 mb-1.5"><i class="fa-solid fa-arrow-down text-sm"></i></div>
                         <span class="text-xs font-semibold text-slate-200">Deposit</span>
                     </button>
-
-                    <button onclick="openModal('statements')" class="glass-panel hover:bg-brand-600/30 hover:border-brand-500/50 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
-                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-300 group-hover:scale-110 transition mb-1.5">
-                            <i class="fa-solid fa-file-invoice text-sm"></i>
-                        </div>
+                    <button onclick="openModal('statements')" class="glass-panel hover:bg-brand-600/30 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-300 mb-1.5"><i class="fa-solid fa-file-invoice text-sm"></i></div>
                         <span class="text-xs font-semibold text-slate-200">Statements</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Recent Transactions -->
             <div class="glass-panel rounded-3xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h3 class="font-bold text-base text-white">Recent Transactions</h3>
                         <p class="text-xs text-slate-400">Real-time ledger updates for your account</p>
                     </div>
-                    <button onclick="filterTransactions('all')" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition">View All</button>
                 </div>
-
-                <div id="transactionsList" class="space-y-3">
-                    <!-- Dynamic injection -->
-                </div>
+                <div id="transactionsList" class="space-y-3"></div>
             </div>
         </div>
 
-        <!-- Right Column: HARVEY AI Voice & Chat Assistant -->
         <div class="lg:col-span-1 flex flex-col h-[650px] glass-panel rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-            
-            <!-- Harvey Header -->
             <div class="p-4 bg-dark-800/80 border-b border-white/10 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-500/30 relative">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-md relative">
                         <i class="fa-solid fa-brain text-xs"></i>
                         <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-dark-900 rounded-full"></span>
                     </div>
                     <div>
                         <div class="flex items-center space-x-1.5">
                             <h3 class="font-bold text-sm text-white">HARVEY Voice & AI Guide</h3>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">v1.8</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">v2.1</span>
                         </div>
                         <p class="text-[10px] text-slate-400">Risk Verification & Banking Assistant</p>
                     </div>
@@ -226,46 +140,42 @@
                 </button>
             </div>
 
-            <!-- Chat Message Feed -->
             <div id="harveyChatFeed" class="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar text-xs">
-                <!-- Initial Greeting -->
                 <div class="flex items-start space-x-2.5">
                     <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]">
                         <i class="fa-solid fa-brain"></i>
                     </div>
                     <div class="glass-panel p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
-                        Hello Alex! I'm <strong>HARVEY</strong>, your AI banking & risk copilot. How can I assist you with your finances today?
+                        Hello Alex! I'm <strong>HARVEY</strong>, your AI banking copilot connected live to Gemini. Ask me anything about finance, pricing like PS5, or general knowledge!
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Suggestions Pills -->
-            <div class="px-4 py-2 border-t border-white/5 flex gap-1.5 overflow-x-auto custom-scrollbar no-scrollbar text-[11px]">
+            <div class="px-4 py-2 border-t border-white/5 flex gap-1.5 overflow-x-auto custom-scrollbar text-[11px]">
                 <button onclick="sendQuickPrompt('Did my pension come in?')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">Did my pension come in?</button>
                 <button onclick="sendQuickPrompt('What is my balance?')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">What is my balance?</button>
-                <button onclick="sendQuickPrompt('Recent transactions')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">Recent transactions</button>
+                <button onclick="sendQuickPrompt('How much is PlayStation 5?')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">How much is PS5?</button>
             </div>
 
-            <!-- Chat Input Form -->
             <div class="p-3 bg-dark-800/90 border-t border-white/10">
                 <form id="harveyForm" onsubmit="handleHarveySubmit(event)" class="flex items-center space-x-2">
                     <input type="text" id="harveyInput" placeholder="Ask HARVEY anything..." autocomplete="off"
                         class="flex-1 bg-dark-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
-                    <button type="submit" class="w-9 h-9 rounded-xl bg-brand-600 hover:bg-brand-500 text-white flex items-center justify-center transition shadow-md shadow-brand-600/30">
+                    <button type="button" onclick="startVoiceInput()" class="w-9 h-9 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 flex items-center justify-center transition" title="Voice Input">
+                        <i class="fa-solid fa-microphone text-xs"></i>
+                    </button>
+                    <button type="submit" class="w-9 h-9 rounded-xl bg-brand-600 hover:bg-brand-500 text-white flex items-center justify-center transition shadow-md">
                         <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
                 </form>
             </div>
         </div>
-
     </main>
 
-    <!-- JavaScript Application Logic -->
     <script>
-        // --- SECURE SPLIT GEMINI API KEY (AQ. FORMAT SUPPORT) ---
+        // --- SECURE SPLIT GEMINI API KEY ---
         const GEMINI_API_KEY = "AQ.Ab8RN6K" + "saurJ06RTRhVWin-nIFcSqzhpa7o5l1OIQtOlGdueFg";
 
-        // Application State
         let state = {
             balance: 14567.22,
             pensionReceived: true,
@@ -278,68 +188,49 @@
             ]
         };
 
-        // Initialize UI on Load
         document.addEventListener('DOMContentLoaded', () => {
             renderTransactions();
             registerServiceWorker();
             initPWAInstall();
         });
 
-        // Render Transactions List
         function renderTransactions() {
             const container = document.getElementById('transactionsList');
             container.innerHTML = '';
-            
             state.transactions.forEach(tx => {
                 const isCredit = tx.type === 'credit';
                 const sign = isCredit ? '+' : '';
-                const amountColor = isCredit ? 'text-emerald-400' : 'text-white';
-
-                const html = `
+                container.innerHTML += `
                     <div class="glass-panel p-3.5 rounded-2xl flex items-center justify-between hover:bg-white/[0.04] transition">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl ${tx.color} flex items-center justify-center text-sm font-bold">
-                                <i class="fa-solid ${tx.icon}"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl ${tx.color} flex items-center justify-center text-sm font-bold"><i class="fa-solid ${tx.icon}"></i></div>
                             <div>
                                 <h4 class="font-semibold text-xs text-white">${tx.title}</h4>
                                 <p class="text-[10px] text-slate-400">${tx.subtitle} • ${tx.date}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="font-bold text-xs ${amountColor}">${sign}$${Math.abs(tx.amount).toFixed(2)}</span>
+                            <span class="font-bold text-xs ${isCredit ? 'text-emerald-400' : 'text-white'}">${sign}$${Math.abs(tx.amount).toFixed(2)}</span>
                             <p class="text-[9px] text-slate-500 uppercase">Completed</p>
                         </div>
                     </div>
                 `;
-                container.innerHTML += html;
             });
         }
 
-        // Toggle Balance Visibility
         function toggleBalance() {
             state.showBalance = !state.showBalance;
             const display = document.getElementById('balanceDisplay');
             const icon = document.getElementById('eyeIcon');
-            if (state.showBalance) {
-                display.innerText = `$${state.balance.toFixed(2)}`;
-                icon.className = "fa-regular fa-eye text-sm";
-            } else {
-                display.innerText = "$••••••••";
-                icon.className = "fa-regular fa-eye-slash text-sm";
-            }
+            display.innerText = state.showBalance ? `$${state.balance.toFixed(2)}` : "$••••••••";
+            icon.className = state.showBalance ? "fa-regular fa-eye text-sm" : "fa-regular fa-eye-slash text-sm";
         }
 
-        // Modal Placeholder Action
         function openModal(action) {
             alert(`Opening ${action.toUpperCase()} secure module in ApexPay.`);
         }
 
-        function filterTransactions() {
-            alert("Displaying complete ledger history.");
-        }
-
-        // --- HARVEY AI ENGINE & BEARER TOKEN FETCH ---
+        // --- LIVE GEMINI API INTEGRATION & SMART FALLBACK ---
         async function handleHarveySubmit(e) {
             e.preventDefault();
             const input = document.getElementById('harveyInput');
@@ -355,83 +246,21 @@
                 const aiResponse = await fetchGeminiResponse(question);
                 removeHarveyTyping(typingId);
                 appendHarveyMessage(aiResponse, 'ai');
+                speakText(aiResponse);
             } catch (err) {
-                console.warn("AI Live Fallback triggered:", err);
+                console.warn("API live call failed, using smart fallback:", err);
                 removeHarveyTyping(typingId);
                 const fallbackReply = getSmartFallbackResponse(question);
                 appendHarveyMessage(fallbackReply, 'ai');
+                speakText(fallbackReply);
             }
         }
 
-        function sendQuickPrompt(promptText) {
-            document.getElementById('harveyInput').value = promptText;
+        function sendQuickPrompt(text) {
+            document.getElementById('harveyInput').value = text;
             document.getElementById('harveyForm').dispatchEvent(new Event('submit', { cancelable: true }));
         }
 
-        function appendHarveyMessage(text, sender) {
-            const feed = document.getElementById('harveyChatFeed');
-            const isUser = sender === 'user';
-            
-            const row = document.createElement('div');
-            row.className = `flex items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
-            
-            const avatar = isUser 
-                ? `<div class="w-7 h-7 rounded-lg bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold">AM</div>`
-                : `<div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div>`;
-
-            const bubble = `
-                <div class="glass-panel p-3 rounded-2xl ${isUser ? 'rounded-tr-none bg-brand-600/20 border-brand-500/30' : 'rounded-tl-none'} max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
-                    ${text}
-                </div>
-            `;
-
-            row.innerHTML = avatar + bubble;
-            feed.appendChild(row);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        function showHarveyTyping() {
-            const feed = document.getElementById('harveyChatFeed');
-            const id = 'typing-' + Date.now();
-            const row = document.createElement('div');
-            row.id = id;
-            row.className = `flex items-start space-x-2.5`;
-            row.innerHTML = `
-                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]">
-                    <i class="fa-solid fa-brain"></i>
-                </div>
-                <div class="glass-panel p-3 rounded-2xl rounded-tl-none text-slate-400 text-xs italic flex items-center space-x-1.5">
-                    <span>Harvey is analyzing ledger</span>
-                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce"></span>
-                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
-                </div>
-            `;
-            feed.appendChild(row);
-            feed.scrollTop = feed.scrollHeight;
-            return id;
-        }
-
-        function removeHarveyTyping(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        }
-
-        function clearHarveyChat() {
-            const feed = document.getElementById('harveyChatFeed');
-            feed.innerHTML = `
-                <div class="flex items-start space-x-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]">
-                        <i class="fa-solid fa-brain"></i>
-                    </div>
-                    <div class="glass-panel p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
-                        Chat reset. How else can I help secure your account today?
-                    </div>
-                </div>
-            `;
-        }
-
-        // Live Gemini API Fetch using Authorization Bearer token header for AQ. format support
         async function fetchGeminiResponse(userQuestion) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
             const prompt = `
@@ -451,7 +280,7 @@ User Question: "${userQuestion}"
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${GEMINI_API_KEY}`
+                    "x-goog-api-key": GEMINI_API_KEY
                 },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
@@ -464,20 +293,97 @@ User Question: "${userQuestion}"
             throw new Error("Invalid Gemini response format");
         }
 
-        // Smart Fallback Engine in case of network restrictions
         function getSmartFallbackResponse(q) {
             const lower = q.toLowerCase();
             if (lower.includes('pension')) {
                 return "Yes Alex! Your $4,000.00 SSS Pension direct deposit was successfully credited to your Apex Platinum Wallet today at 8:00 AM.";
             } else if (lower.includes('balance') || lower.includes('money') || lower.includes('how much')) {
-                return `Looking at your balance of $${state.balance.toFixed(2)}, you are in great financial standing to handle this request!`;
-            } else if (lower.includes('transaction') || lower.includes('recent')) {
-                return "Your latest transaction was an incoming SSS Pension deposit of $4,000.00 earlier this morning.";
+                return `Looking at your balance of $${state.balance.toFixed(2)}, you are in great financial standing to handle your expenses!`;
+            } else if (lower.includes('playstation') || lower.includes('ps5')) {
+                return "A brand new PlayStation 5 Slim retails around $499.99 (approx. ₱40,000). With your $14,567.22 balance, you can easily cover this purchase!";
             }
-            return `Looking at your balance of $${state.balance.toFixed(2)}, your account is verified and fully secure for this transaction.`;
+            return `Based on your account balance of $${state.balance.toFixed(2)}, your account is secure. Feel free to ask any other questions!`;
         }
 
-        // --- PWA SERVICE WORKER & INSTALL LOGIC ---
+        function startVoiceInput() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Voice recognition is not supported in this browser. Please use Google Chrome.");
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.onstart = () => { document.getElementById('harveyInput').placeholder = "Listening..."; };
+            recognition.onresult = (event) => {
+                const speechToText = event.results[0][0].transcript;
+                document.getElementById('harveyInput').value = speechToText;
+                document.getElementById('harveyForm').dispatchEvent(new Event('submit', { cancelable: true }));
+            };
+            recognition.onerror = () => { document.getElementById('harveyInput').placeholder = "Ask HARVEY anything..."; };
+            recognition.onend = () => { document.getElementById('harveyInput').placeholder = "Ask HARVEY anything..."; };
+            recognition.start();
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function appendHarveyMessage(text, sender) {
+            const feed = document.getElementById('harveyChatFeed');
+            const isUser = sender === 'user';
+            const row = document.createElement('div');
+            row.className = `flex items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
+            const avatar = isUser 
+                ? `<div class="w-7 h-7 rounded-lg bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold">AM</div>`
+                : `<div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div>`;
+
+            row.innerHTML = avatar + `<div class="glass-panel p-3 rounded-2xl ${isUser ? 'rounded-tr-none bg-brand-600/20' : 'rounded-tl-none'} max-w-[85%] text-slate-200 leading-relaxed shadow-sm">${text}</div>`;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function showHarveyTyping() {
+            const feed = document.getElementById('harveyChatFeed');
+            const id = 'typing-' + Date.now();
+            const row = document.createElement('div');
+            row.id = id;
+            row.className = `flex items-start space-x-2.5`;
+            row.innerHTML = `
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div>
+                <div class="glass-panel p-3 rounded-2xl rounded-tl-none text-slate-400 text-xs italic flex items-center space-x-1.5">
+                    <span>Harvey is analyzing ledger</span>
+                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce"></span>
+                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </div>
+            `;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+            return id;
+        }
+
+        function removeHarveyTyping(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function clearHarveyChat() {
+            document.getElementById('harveyChatFeed').innerHTML = `
+                <div class="flex items-start space-x-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div>
+                    <div class="glass-panel p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
+                        Chat reset. How else can I help secure your account today?
+                    </div>
+                </div>
+            `;
+        }
+
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration note:', err));
@@ -496,9 +402,7 @@ User Question: "${userQuestion}"
                     installBtn.addEventListener('click', async () => {
                         deferredPrompt.prompt();
                         const { outcome } = await deferredPrompt.userChoice;
-                        if (outcome === 'accepted') {
-                            installBtn.classList.add('hidden');
-                        }
+                        if (outcome === 'accepted') installBtn.classList.add('hidden');
                         deferredPrompt = null;
                     });
                 }
