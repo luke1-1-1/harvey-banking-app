@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ApexBank E-Wallet & HARVEY AI</title>
+    <title>ApexPay | Digital Wallet & HARVEY AI</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0f19">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%234f46e5'/%3E%3Ctext x='50' y='68' font-size='62' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EA%3C/text%3E%3C/svg%3E">
@@ -33,6 +33,24 @@
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(11, 15, 25, 0.5); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 3px; }
+
+        .wallet-field { width: 100%; background: #0b0f19; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; color: #f8fafc; padding: 11px 13px; font-size: 13px; outline: none; transition: border-color .18s ease; }
+        .wallet-field:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
+        .wallet-label { display: block; color: #cbd5e1; font-size: 11px; font-weight: 600; margin-bottom: 7px; }
+        .wallet-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #4f46e5; color: white; padding: 11px 16px; border-radius: 12px; font-size: 12px; font-weight: 700; transition: .18s ease; }
+        .wallet-primary:hover { background: #6366f1; }
+        .wallet-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,.06); color: #cbd5e1; padding: 11px 16px; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .wallet-primary:disabled { opacity: .45; cursor: not-allowed; }
+        #printRoot { display: none; }
+        @media print {
+            body * { visibility: hidden !important; }
+            #printRoot, #printRoot * { visibility: visible !important; }
+            #printRoot { display: block !important; position: absolute; inset: 0; width: 100%; padding: 24px; background: white !important; color: #111827 !important; font: 12px Arial, sans-serif; }
+            #printRoot h1, #printRoot h2, #printRoot p, #printRoot td, #printRoot th { color: #111827 !important; }
+            #printRoot table { border-collapse: collapse; width: 100%; margin-top: 18px; }
+            #printRoot th, #printRoot td { text-align: left; padding: 8px; border-bottom: 1px solid #d1d5db; }
+            #printRoot .print-muted { color: #4b5563 !important; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
@@ -51,7 +69,7 @@
         <div class="flex items-center space-x-4">
             <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Account Verified</span>
+                <span>Wallet Active</span>
             </div>
             <button id="installAppBtn" class="hidden items-center space-x-2 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition shadow-lg">
                 <i class="fa-solid fa-download"></i><span>Install App</span>
@@ -89,6 +107,7 @@
                         </span>
                     </div>
                     <p class="text-xs text-slate-400 mt-2 font-mono">Account ID: •••• •••• •••• 8492</p>
+                    <p class="text-[10px] text-slate-500 mt-1">ApexPay academic prototype · wallet activity is simulated locally</p>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
                     <button onclick="openModal('send')" class="glass-panel hover:bg-brand-600/30 py-3 px-4 rounded-2xl flex flex-col items-center justify-center transition group">
@@ -114,10 +133,22 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h3 class="font-bold text-base text-white">Recent Transactions</h3>
-                        <p class="text-xs text-slate-400">Real-time ledger updates for your account</p>
+                        <p class="text-xs text-slate-400">Your latest wallet activity</p>
                     </div>
+                    <button onclick="openModal('statements')" class="text-xs font-semibold text-indigo-300 hover:text-white transition">View statements <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></button>
                 </div>
                 <div id="transactionsList" class="space-y-3"></div>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="font-bold text-base text-white">Payment Requests</h3>
+                        <p class="text-xs text-slate-400">Track incoming payment requests</p>
+                    </div>
+                    <button onclick="openModal('request')" class="px-3 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 text-purple-200 text-xs font-semibold transition"><i class="fa-solid fa-plus mr-1"></i> New request</button>
+                </div>
+                <div id="requestsList" class="space-y-3"></div>
             </div>
         </div>
 
@@ -147,7 +178,7 @@
                         <i class="fa-solid fa-brain"></i>
                     </div>
                     <div class="glass-panel p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
-                        Hello Alex! I'm <strong>HARVEY</strong>, your AI banking copilot connected live to Gemini. Ask me anything about finance, pricing like PS5, or general knowledge!
+                        Hello Alex! I'm <strong>HARVEY</strong>, your AI banking copilot connected live to Gemini. Ask me about your wallet activity, everyday finance, current prices, or general questions!
                     </div>
                 </div>
             </div>
@@ -173,262 +204,526 @@
         </div>
     </main>
 
+
+    <div id="appModal" class="hidden fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm p-4 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div id="modalPanel" class="w-full max-w-xl max-h-[90vh] overflow-hidden rounded-3xl border border-white/10 bg-[#131827] shadow-2xl flex flex-col">
+            <div class="p-5 border-b border-white/10 flex items-start justify-between gap-4">
+                <div>
+                    <p id="modalEyebrow" class="text-[10px] uppercase tracking-[0.18em] text-indigo-300 font-bold">ApexPay secure wallet</p>
+                    <h3 id="modalTitle" class="text-lg font-bold text-white mt-1">Wallet action</h3>
+                    <p id="modalSubtitle" class="text-xs text-slate-400 mt-1"></p>
+                </div>
+                <button id="modalClose" class="w-9 h-9 rounded-xl glass-panel text-slate-300 hover:text-white" aria-label="Close dialog"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="modalBody" class="p-5 overflow-y-auto custom-scrollbar"></div>
+        </div>
+    </div>
+    <div id="toast" class="fixed z-[120] bottom-5 left-1/2 -translate-x-1/2 hidden px-4 py-3 rounded-xl border border-white/10 bg-slate-900 text-sm text-white shadow-2xl max-w-[90vw]"></div>
+    <div id="printRoot"></div>
+
     <script>
-        // Set this to the Cloudflare Worker URL after deploying worker.js.
         const HARVEY_API_URL = "https://jolly-sunset-ab93.lukepaclibar24.workers.dev";
-        let state = {
-            balance: 14567.22,
-            pensionReceived: true,
-            showBalance: true,
-            transactions: [
-                { id: 1, title: 'SSS Pension Direct Deposit', subtitle: 'Social Security / Pension Fund', amount: 4000.00, type: 'credit', date: 'Today, 8:00 AM', icon: 'fa-landmark', color: 'text-emerald-400 bg-emerald-500/20' },
-                { id: 2, title: 'Fresh Market Supermarket', subtitle: 'Grocery & Provisions', amount: -124.50, type: 'debit', date: 'Yesterday, 4:15 PM', icon: 'fa-cart-shopping', color: 'text-brand-400 bg-brand-500/20' },
-                { id: 3, title: 'City Power & Electric Co.', subtitle: 'Utility Provider', amount: -85.00, type: 'debit', date: 'May 3, 2026, 11:30 AM', icon: 'fa-bolt', color: 'text-amber-400 bg-amber-500/20' },
-                { id: 4, title: 'Apex Global Transfer', subtitle: 'Incoming Wire Transfer', amount: 1500.00, type: 'credit', date: 'May 1, 2026, 2:10 PM', icon: 'fa-arrow-down-left', color: 'text-emerald-400 bg-emerald-500/20' }
-            ]
-        };
+        const STORAGE_KEY = "apexpay.wallet.ledger.v2";
+        const MAX_TRANSACTION = 1000000;
+        let pendingAction = null;
+        let toastTimer = null;
+        let deferredPrompt;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderTransactions();
-            registerServiceWorker();
-            initPWAInstall();
-        });
-
-        function renderTransactions() {
-            const container = document.getElementById('transactionsList');
-            container.innerHTML = '';
-            state.transactions.forEach(tx => {
-                const isCredit = tx.type === 'credit';
-                const sign = isCredit ? '+' : '';
-                container.innerHTML += `
-                    <div class="glass-panel p-3.5 rounded-2xl flex items-center justify-between hover:bg-white/[0.04] transition">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl ${tx.color} flex items-center justify-center text-sm font-bold"><i class="fa-solid ${tx.icon}"></i></div>
-                            <div>
-                                <h4 class="font-semibold text-xs text-white">${tx.title}</h4>
-                                <p class="text-[10px] text-slate-400">${tx.subtitle} • ${tx.date}</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="font-bold text-xs ${isCredit ? 'text-emerald-400' : 'text-white'}">${sign}$${Math.abs(tx.amount).toFixed(2)}</span>
-                            <p class="text-[9px] text-slate-500 uppercase">Completed</p>
-                        </div>
-                    </div>
-                `;
-            });
+        function makeSeedState() {
+            const now = new Date();
+            const yesterday = new Date(now.getTime() - 86400000);
+            const may3 = new Date("2026-05-03T11:30:00+08:00");
+            const may1 = new Date("2026-05-01T14:10:00+08:00");
+            const pensionDate = new Date(now);
+            pensionDate.setHours(8, 0, 0, 0);
+            if (pensionDate > now) pensionDate.setDate(pensionDate.getDate() - 1);
+            return {
+                accountHolder: "Alex Morgan",
+                balance: 14567.22,
+                openingBalance: 9276.72,
+                currency: "USD",
+                pensionReceived: true,
+                showBalance: true,
+                transactions: [
+                    { id: "APX-OPEN-1004", title: "SSS Pension Direct Deposit", subtitle: "Social Security / Pension Fund", amount: 4000, type: "credit", category: "pension", date: pensionDate.toISOString(), status: "Completed", reference: "PEN-2026-1004" },
+                    { id: "APX-OPEN-1003", title: "Fresh Market Supermarket", subtitle: "Grocery & Provisions", amount: -124.50, type: "debit", category: "purchase", date: yesterday.toISOString(), status: "Completed", reference: "POS-884120" },
+                    { id: "APX-OPEN-1002", title: "City Power & Electric Co.", subtitle: "Utility Provider", amount: -85, type: "debit", category: "utility", date: may3.toISOString(), status: "Completed", reference: "BILL-530211" },
+                    { id: "APX-OPEN-1001", title: "Apex Global Transfer", subtitle: "Incoming Wire Transfer", amount: 1500, type: "credit", category: "transfer", date: may1.toISOString(), status: "Completed", reference: "WIRE-501812" }
+                ],
+                requests: []
+            };
         }
 
+        function loadState() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+                if (saved && Number.isFinite(Number(saved.balance)) && Array.isArray(saved.transactions) && Array.isArray(saved.requests)) {
+                    return {
+                        ...makeSeedState(),
+                        ...saved,
+                        balance: roundMoney(Number(saved.balance)),
+                        openingBalance: Number.isFinite(Number(saved.openingBalance)) ? roundMoney(Number(saved.openingBalance)) : 9276.72,
+                        transactions: saved.transactions.slice(0, 500),
+                        requests: saved.requests.slice(0, 200),
+                        showBalance: true
+                    };
+                }
+            } catch (error) {
+                console.warn("ApexPay saved ledger could not be loaded:", error);
+            }
+            const initial = makeSeedState();
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(initial)); } catch (error) { console.warn("Local storage is unavailable:", error); }
+            return initial;
+        }
+
+        let state = loadState();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateWalletUI();
+            registerServiceWorker();
+            initPWAInstall();
+            document.getElementById("modalClose").addEventListener("click", closeModal);
+            document.getElementById("appModal").addEventListener("click", (event) => {
+                if (event.target.id === "appModal") closeModal();
+            });
+            document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeModal(); });
+        });
+
+        function roundMoney(value) { return Math.round((Number(value) + Number.EPSILON) * 100) / 100; }
+        function money(value) {
+            return new Intl.NumberFormat("en-US", { style: "currency", currency: state.currency || "USD" }).format(Number(value) || 0);
+        }
+        function escapeHTML(value) {
+            return String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+        }
+        function prettyDate(value, withTime = true) {
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return "Date unavailable";
+            return new Intl.DateTimeFormat("en-PH", withTime
+                ? { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Manila" }
+                : { dateStyle: "medium", timeZone: "Asia/Manila" }).format(date);
+        }
+        function saveState(showNotice = false) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                updateWalletUI();
+                if (showNotice) showToast("Wallet activity saved.");
+                return true;
+            } catch (error) {
+                console.error("Could not save ApexPay ledger:", error);
+                showToast("The browser could not save this change. Check available storage.", "error");
+                updateWalletUI();
+                return false;
+            }
+        }
+        function updateWalletUI() {
+            const display = document.getElementById("balanceDisplay");
+            if (display) display.textContent = state.showBalance ? money(state.balance) : "••••••••";
+            const eye = document.getElementById("eyeIcon");
+            if (eye) eye.className = state.showBalance ? "fa-regular fa-eye text-sm" : "fa-regular fa-eye-slash text-sm";
+            renderTransactions();
+            renderRequests();
+        }
         function toggleBalance() {
             state.showBalance = !state.showBalance;
-            const display = document.getElementById('balanceDisplay');
-            const icon = document.getElementById('eyeIcon');
-            display.innerText = state.showBalance ? `$${state.balance.toFixed(2)}` : "$••••••••";
-            icon.className = state.showBalance ? "fa-regular fa-eye text-sm" : "fa-regular fa-eye-slash text-sm";
+            const display = document.getElementById("balanceDisplay");
+            if (display) display.textContent = state.showBalance ? money(state.balance) : "••••••••";
+            const eye = document.getElementById("eyeIcon");
+            if (eye) eye.className = state.showBalance ? "fa-regular fa-eye text-sm" : "fa-regular fa-eye-slash text-sm";
+        }
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = "fixed z-[120] bottom-5 left-1/2 -translate-x-1/2 px-4 py-3 rounded-xl border text-sm shadow-2xl max-w-[90vw] " +
+                (type === "error" ? "border-rose-400/30 bg-rose-950 text-rose-100" : "border-emerald-400/20 bg-slate-900 text-white");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add("hidden"), 3200);
+        }
+
+        function renderTransactions() {
+            const container = document.getElementById("transactionsList");
+            if (!container) return;
+            const rows = [...state.transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
+            if (!rows.length) {
+                container.innerHTML = '<p class="text-xs text-slate-500 py-5 text-center">No transactions yet. Your completed wallet activity will appear here.</p>';
+                return;
+            }
+            container.innerHTML = rows.map(tx => {
+                const credit = Number(tx.amount) >= 0;
+                const icon = credit ? "fa-arrow-down-left" : "fa-arrow-up-right";
+                const iconColor = credit ? "text-emerald-300 bg-emerald-500/20" : "text-indigo-300 bg-indigo-500/20";
+                return `<button type="button" data-transaction-id="${escapeHTML(tx.id)}" class="w-full text-left glass-panel p-3.5 rounded-2xl flex items-center justify-between gap-3 hover:bg-white/[0.05] transition">
+                    <span class="flex items-center space-x-3 min-w-0"><span class="w-10 h-10 rounded-xl ${iconColor} flex-shrink-0 flex items-center justify-center text-sm"><i class="fa-solid ${icon}"></i></span>
+                    <span class="min-w-0"><span class="block font-semibold text-xs text-white truncate">${escapeHTML(tx.title)}</span><span class="block text-[10px] text-slate-400 truncate">${escapeHTML(tx.subtitle || tx.category || "Wallet activity")} · ${escapeHTML(prettyDate(tx.date))}</span><span class="block text-[9px] text-slate-500 mt-0.5">${escapeHTML(tx.id)}</span></span></span>
+                    <span class="text-right flex-shrink-0"><span class="block font-bold text-xs ${credit ? "text-emerald-400" : "text-white"}">${credit ? "+" : "−"}${money(Math.abs(Number(tx.amount)))}</span><span class="block text-[9px] text-slate-500 uppercase">${escapeHTML(tx.status || "Completed")}</span></span>
+                </button>`;
+            }).join("");
+            container.querySelectorAll("[data-transaction-id]").forEach(button => button.addEventListener("click", () => showTransactionDetails(button.dataset.transactionId)));
+        }
+
+        function renderRequests() {
+            const container = document.getElementById("requestsList");
+            if (!container) return;
+            const rows = [...state.requests].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            if (!rows.length) {
+                container.innerHTML = '<p class="text-xs text-slate-500 py-4 text-center">No payment requests yet. Create a request to track money owed to you.</p>';
+                return;
+            }
+            container.innerHTML = rows.slice(0, 8).map(item => {
+                const statusClass = item.status === "Paid" ? "text-emerald-300 bg-emerald-500/10" : item.status === "Cancelled" ? "text-slate-400 bg-white/5" : "text-amber-300 bg-amber-500/10";
+                const controls = item.status === "Pending" ? `<div class="flex gap-2 mt-3"><button data-request-paid="${escapeHTML(item.id)}" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/35 text-emerald-200 text-[10px] font-semibold">Mark as received</button><button data-request-cancel="${escapeHTML(item.id)}" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-[10px] font-semibold">Cancel</button></div>` : "";
+                return `<div class="glass-panel p-4 rounded-2xl"><div class="flex items-start justify-between gap-3"><div class="min-w-0"><p class="text-xs text-white font-semibold">${escapeHTML(item.name)}</p><p class="text-[10px] text-slate-400 mt-1">${escapeHTML(item.contact || "Contact not provided")} · ${escapeHTML(prettyDate(item.createdAt))}</p><p class="text-[10px] text-slate-500 mt-1">${escapeHTML(item.note || "Payment request")}</p></div><div class="text-right flex-shrink-0"><p class="text-sm font-bold text-white">${money(item.amount)}</p><span class="inline-flex mt-1 px-2 py-1 rounded-full text-[9px] font-bold ${statusClass}">${escapeHTML(item.status)}</span></div></div>${controls}</div>`;
+            }).join("");
+            container.querySelectorAll("[data-request-paid]").forEach(button => button.addEventListener("click", () => markRequestPaid(button.dataset.requestPaid)));
+            container.querySelectorAll("[data-request-cancel]").forEach(button => button.addEventListener("click", () => cancelRequest(button.dataset.requestCancel)));
         }
 
         function openModal(action) {
-            alert(`Opening ${action.toUpperCase()} secure module in ApexPay.`);
+            if (action === "send") return openSendForm();
+            if (action === "request") return openRequestForm();
+            if (action === "deposit") return openDepositForm();
+            if (action === "statements") return openStatementsModal();
+        }
+        function showModal(title, subtitle, content, eyebrow = "ApexPay wallet") {
+            document.getElementById("modalEyebrow").textContent = eyebrow;
+            document.getElementById("modalTitle").textContent = title;
+            document.getElementById("modalSubtitle").textContent = subtitle || "";
+            document.getElementById("modalBody").innerHTML = content;
+            document.getElementById("appModal").classList.remove("hidden");
+            document.body.classList.add("overflow-hidden");
+        }
+        function closeModal() {
+            document.getElementById("appModal").classList.add("hidden");
+            document.body.classList.remove("overflow-hidden");
+            pendingAction = null;
+        }
+        const field = (id, label, type = "text", placeholder = "", extra = "") => `<label class="block"><span class="wallet-label">${label}</span><input class="wallet-field" id="${id}" name="${id}" type="${type}" placeholder="${placeholder}" ${extra}></label>`;
+        const amountField = () => field("amount", "Amount (USD)", "number", "0.00", 'min="0.01" max="1000000" step="0.01" required');
+
+        function openSendForm() {
+            showModal("Send money", "Transfer funds to a recipient in your ApexPay project wallet.", `
+                <form id="sendForm" class="space-y-4">
+                    ${field("recipientName", "Recipient name", "text", "e.g. Jordan Lee", 'maxlength="70" required')}
+                    ${field("recipientContact", "Recipient account / email / mobile", "text", "e.g. jordan@email.com", 'maxlength="100" required')}
+                    ${amountField()}
+                    ${field("note", "Transfer note (optional)", "text", "What is this payment for?", 'maxlength="120"')}
+                    <div class="rounded-xl bg-indigo-500/10 border border-indigo-400/15 p-3 text-[11px] text-indigo-100"><i class="fa-solid fa-shield-halved mr-1"></i> Review the recipient and amount before confirming. This records the transfer in the ApexPay project ledger.</div>
+                    <div class="flex justify-end gap-2"><button type="button" class="wallet-secondary" id="cancelModalAction">Cancel</button><button class="wallet-primary" type="submit">Review transfer <i class="fa-solid fa-arrow-right"></i></button></div>
+                </form>`);
+            document.getElementById("cancelModalAction").onclick = closeModal;
+            document.getElementById("sendForm").addEventListener("submit", event => {
+                event.preventDefault();
+                const data = new FormData(event.currentTarget);
+                const amount = roundMoney(Number(data.get("amount")));
+                if (!Number.isFinite(amount) || amount <= 0 || amount > MAX_TRANSACTION) return showToast("Enter a valid amount up to $1,000,000.", "error");
+                if (amount > state.balance) return showToast("Insufficient available balance for this transfer.", "error");
+                pendingAction = { type: "send", name: String(data.get("recipientName")).trim(), contact: String(data.get("recipientContact")).trim(), amount, note: String(data.get("note") || "").trim() };
+                showConfirmation("Confirm transfer", "Check the transfer details before completing.", [
+                    ["Recipient", pendingAction.name], ["Destination", pendingAction.contact], ["Amount", money(amount)], ["Note", pendingAction.note || "—"]
+                ]);
+            });
         }
 
-        // --- HARVEY AI (secure server-side Gemini proxy) ---
-        async function handleHarveySubmit(e) {
-            e.preventDefault();
-            const input = document.getElementById('harveyInput');
+        function openRequestForm() {
+            showModal("Request money", "Create a payment request and track it until it is marked as received.", `
+                <form id="requestForm" class="space-y-4">
+                    ${field("requestName", "Request from", "text", "e.g. Jordan Lee", 'maxlength="70" required')}
+                    ${field("requestContact", "Contact details", "text", "e.g. jordan@email.com", 'maxlength="100"')}
+                    ${amountField()}
+                    ${field("requestNote", "Description", "text", "e.g. Shared dinner", 'maxlength="120"')}
+                    <div class="flex justify-end gap-2"><button type="button" class="wallet-secondary" id="cancelModalAction">Cancel</button><button class="wallet-primary" type="submit">Create request <i class="fa-solid fa-arrow-right"></i></button></div>
+                </form>`);
+            document.getElementById("cancelModalAction").onclick = closeModal;
+            document.getElementById("requestForm").addEventListener("submit", event => {
+                event.preventDefault();
+                const data = new FormData(event.currentTarget);
+                const amount = roundMoney(Number(data.get("amount")));
+                if (!Number.isFinite(amount) || amount <= 0 || amount > MAX_TRANSACTION) return showToast("Enter a valid request amount.", "error");
+                pendingAction = { type: "request", name: String(data.get("requestName")).trim(), contact: String(data.get("requestContact") || "").trim(), amount, note: String(data.get("requestNote") || "").trim() };
+                showConfirmation("Create payment request", "Review the payment request details.", [["Requested from", pendingAction.name], ["Contact", pendingAction.contact || "—"], ["Amount", money(amount)], ["Description", pendingAction.note || "Payment request"]]);
+            });
+        }
+
+        function openDepositForm() {
+            showModal("Add money", "Record a deposit to your ApexPay wallet.", `
+                <form id="depositForm" class="space-y-4">
+                    <label class="block"><span class="wallet-label">Deposit source</span><select id="depositSource" name="depositSource" class="wallet-field"><option>Cash deposit</option><option>Salary</option><option>Pension</option><option>Bank transfer</option><option>Other</option></select></label>
+                    ${amountField()}
+                    ${field("depositReference", "Reference / description (optional)", "text", "e.g. Monthly allowance", 'maxlength="120"')}
+                    <div class="flex justify-end gap-2"><button type="button" class="wallet-secondary" id="cancelModalAction">Cancel</button><button class="wallet-primary" type="submit">Review deposit <i class="fa-solid fa-arrow-right"></i></button></div>
+                </form>`);
+            document.getElementById("cancelModalAction").onclick = closeModal;
+            document.getElementById("depositForm").addEventListener("submit", event => {
+                event.preventDefault();
+                const data = new FormData(event.currentTarget);
+                const amount = roundMoney(Number(data.get("amount")));
+                if (!Number.isFinite(amount) || amount <= 0 || amount > MAX_TRANSACTION) return showToast("Enter a valid deposit amount.", "error");
+                pendingAction = { type: "deposit", source: String(data.get("depositSource")), amount, note: String(data.get("depositReference") || "").trim() };
+                showConfirmation("Confirm deposit", "Review the deposit before adding it to your wallet.", [["Source", pendingAction.source], ["Amount", money(amount)], ["Reference", pendingAction.note || "—"]]);
+            });
+        }
+
+        function showConfirmation(title, subtitle, rows) {
+            const details = rows.map(([label, value]) => `<div class="flex justify-between gap-4 py-2 border-b border-white/5"><span class="text-xs text-slate-400">${escapeHTML(label)}</span><span class="text-xs text-white font-semibold text-right break-all">${escapeHTML(value)}</span></div>`).join("");
+            showModal(title, subtitle, `<div class="rounded-2xl bg-white/[0.03] border border-white/10 p-4">${details}</div><p class="text-[10px] text-slate-500 mt-3">This action updates your local ApexPay project ledger. It does not contact a bank or payment network.</p><div class="flex justify-end gap-2 mt-5"><button id="backAction" class="wallet-secondary">Go back</button><button id="confirmAction" class="wallet-primary">Confirm <i class="fa-solid fa-check"></i></button></div>`);
+            document.getElementById("backAction").onclick = () => {
+                if (pendingAction?.type === "send") openSendForm();
+                else if (pendingAction?.type === "request") openRequestForm();
+                else if (pendingAction?.type === "deposit") openDepositForm();
+            };
+            document.getElementById("confirmAction").onclick = completePendingAction;
+        }
+
+        function makeId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`; }
+        function pushTransaction({ title, subtitle, amount, type, category, reference }) {
+            const tx = { id: makeId("APX"), title, subtitle, amount: roundMoney(amount), type, category, date: new Date().toISOString(), status: "Completed", reference: reference || makeId("REF") };
+            state.transactions.unshift(tx);
+            return tx;
+        }
+        function completePendingAction() {
+            if (!pendingAction) return;
+            const action = pendingAction;
+            pendingAction = null;
+            let receipt;
+            if (action.type === "send") {
+                if (action.amount > state.balance) return showToast("Your balance changed. The transfer was not completed.", "error");
+                state.balance = roundMoney(state.balance - action.amount);
+                const tx = pushTransaction({ title: `Transfer to ${action.name}`, subtitle: action.contact, amount: -action.amount, type: "debit", category: "transfer", reference: makeId("TRF") });
+                receipt = { title: "Transfer completed", status: "Completed", id: tx.id, date: tx.date, amount: action.amount, direction: "Sent", counterparty: action.name, contact: action.contact, note: action.note, reference: tx.reference };
+            } else if (action.type === "deposit") {
+                state.balance = roundMoney(state.balance + action.amount);
+                if (action.source.toLowerCase() === "pension") state.pensionReceived = true;
+                const tx = pushTransaction({ title: `${action.source} deposit`, subtitle: action.note || "Wallet deposit", amount: action.amount, type: "credit", category: "deposit", reference: makeId("DEP") });
+                receipt = { title: "Deposit recorded", status: "Completed", id: tx.id, date: tx.date, amount: action.amount, direction: "Received", counterparty: action.source, contact: "ApexPay wallet", note: action.note, reference: tx.reference };
+            } else if (action.type === "request") {
+                const request = { id: makeId("REQ"), name: action.name, contact: action.contact, amount: action.amount, note: action.note, status: "Pending", createdAt: new Date().toISOString() };
+                state.requests.unshift(request);
+                receipt = { title: "Payment request created", status: "Pending", id: request.id, date: request.createdAt, amount: request.amount, direction: "Request", counterparty: request.name, contact: request.contact, note: request.note, reference: request.id };
+            }
+            saveState();
+            if (receipt) showReceipt(receipt);
+        }
+
+        function markRequestPaid(id) {
+            const request = state.requests.find(item => item.id === id && item.status === "Pending");
+            if (!request) return;
+            request.status = "Paid";
+            request.paidAt = new Date().toISOString();
+            state.balance = roundMoney(state.balance + Number(request.amount));
+            const tx = pushTransaction({ title: `Payment received from ${request.name}`, subtitle: request.note || "Payment request settled", amount: Number(request.amount), type: "credit", category: "request", reference: request.id });
+            saveState();
+            showReceipt({ title: "Payment received", status: "Completed", id: tx.id, date: tx.date, amount: Number(request.amount), direction: "Received", counterparty: request.name, contact: request.contact, note: request.note, reference: request.id });
+        }
+        function cancelRequest(id) {
+            const request = state.requests.find(item => item.id === id && item.status === "Pending");
+            if (!request) return;
+            request.status = "Cancelled";
+            request.cancelledAt = new Date().toISOString();
+            saveState();
+            showToast("Payment request cancelled.");
+        }
+
+        function showReceipt(receipt) {
+            const rows = [["Transaction reference", receipt.id], ["Date", prettyDate(receipt.date)], ["Status", receipt.status], ["Type", receipt.direction], ["Name", receipt.counterparty], ["Contact", receipt.contact || "—"], ["Amount", money(receipt.amount)], ["Note", receipt.note || "—"]];
+            const detailRows = rows.map(([label, value]) => `<div class="flex justify-between gap-4 py-2 border-b border-white/5"><span class="text-xs text-slate-400">${escapeHTML(label)}</span><span class="text-xs text-white font-semibold text-right break-all">${escapeHTML(value)}</span></div>`).join("");
+            showModal(receipt.title, "ApexPay transaction receipt", `<div class="text-center py-3"><div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-500/15 text-emerald-300 flex items-center justify-center text-xl"><i class="fa-solid fa-check"></i></div><p class="text-2xl font-extrabold text-white mt-3">${money(receipt.amount)}</p><p class="text-[10px] text-emerald-300 font-bold uppercase tracking-wider mt-1">${escapeHTML(receipt.status)}</p></div><div class="rounded-2xl bg-white/[0.03] border border-white/10 p-4">${detailRows}</div><div class="flex justify-end gap-2 mt-5"><button id="downloadReceiptBtn" class="wallet-secondary"><i class="fa-solid fa-download"></i> Download</button><button id="printReceiptBtn" class="wallet-primary"><i class="fa-solid fa-print"></i> Print receipt</button><button id="doneReceiptBtn" class="wallet-secondary">Done</button></div>`);
+            document.getElementById("downloadReceiptBtn").onclick = () => downloadText(`${receipt.id}-receipt.txt`, receiptText(receipt));
+            document.getElementById("printReceiptBtn").onclick = () => printContent(receiptPrintHTML(receipt));
+            document.getElementById("doneReceiptBtn").onclick = closeModal;
+        }
+        function receiptText(receipt) {
+            return [`APEXPAY — ${receipt.title.toUpperCase()}`, `Reference: ${receipt.id}`, `Date: ${prettyDate(receipt.date)}`, `Status: ${receipt.status}`, `Type: ${receipt.direction}`, `Name: ${receipt.counterparty}`, `Contact: ${receipt.contact || "—"}`, `Amount: ${money(receipt.amount)}`, `Note: ${receipt.note || "—"}`, "", "Academic project receipt. No external funds were moved."].join("\n");
+        }
+        function receiptPrintHTML(receipt) {
+            return `<h1 style="font-size:24px;font-weight:700">ApexPay</h1><p class="print-muted">Digital Wallet · Transaction receipt</p><h2 style="font-size:18px;margin-top:24px">${escapeHTML(receipt.title)}</h2><p style="font-size:26px;font-weight:700;margin:14px 0">${money(receipt.amount)}</p><table>${[["Reference",receipt.id],["Date",prettyDate(receipt.date)],["Status",receipt.status],["Type",receipt.direction],["Name",receipt.counterparty],["Contact",receipt.contact || "—"],["Note",receipt.note || "—"]].map(([a,b])=>`<tr><th>${escapeHTML(a)}</th><td>${escapeHTML(b)}</td></tr>`).join("")}</table><p class="print-muted" style="margin-top:28px">Academic project receipt. No external funds were moved.</p>`;
+        }
+        function showTransactionDetails(id) {
+            const tx = state.transactions.find(item => item.id === id);
+            if (!tx) return;
+            const receipt = { title: tx.title, status: tx.status || "Completed", id: tx.id, date: tx.date, amount: Math.abs(Number(tx.amount)), direction: Number(tx.amount) >= 0 ? "Received" : "Sent", counterparty: tx.subtitle || tx.title, contact: tx.reference || "—", note: tx.category || "Wallet activity", reference: tx.reference };
+            showReceipt(receipt);
+        }
+
+        function getStatementData(period) {
+            const sorted = [...state.transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const now = new Date();
+            let start = null;
+            if (period === "30days") start = new Date(now.getTime() - 30 * 86400000);
+            if (period === "month") start = new Date(now.getFullYear(), now.getMonth(), 1);
+            const included = sorted.filter(tx => !start || new Date(tx.date) >= start);
+            const prior = sorted.filter(tx => start && new Date(tx.date) < start);
+            const opening = roundMoney(state.openingBalance + prior.reduce((sum, tx) => sum + Number(tx.amount), 0));
+            const credits = roundMoney(included.filter(tx => Number(tx.amount) > 0).reduce((sum, tx) => sum + Number(tx.amount), 0));
+            const debits = roundMoney(included.filter(tx => Number(tx.amount) < 0).reduce((sum, tx) => sum + Math.abs(Number(tx.amount)), 0));
+            return { rows: included, opening, credits, debits, closing: roundMoney(opening + credits - debits), period };
+        }
+        function openStatementsModal() {
+            showModal("Account statements", "Review wallet activity and export a statement.", `<div class="space-y-4"><label class="block"><span class="wallet-label">Statement period</span><select id="statementPeriod" class="wallet-field"><option value="all">All recorded activity</option><option value="month">Current month</option><option value="30days">Last 30 days</option></select></label><div id="statementSummary" class="grid grid-cols-2 gap-3"></div><div class="rounded-xl bg-white/[0.03] border border-white/10 p-3"><p class="text-xs font-semibold text-white mb-1">Statement includes</p><p class="text-[10px] text-slate-400">Transaction date, reference, description, debit, credit, status, and running balance.</p></div><div class="flex justify-end gap-2"><button id="closeStatement" class="wallet-secondary">Close</button><button id="printStatement" class="wallet-secondary"><i class="fa-solid fa-print"></i> Print</button><button id="downloadStatement" class="wallet-primary"><i class="fa-solid fa-download"></i> Export CSV</button></div></div>`);
+            const period = document.getElementById("statementPeriod");
+            const refresh = () => renderStatementSummary(period.value);
+            period.addEventListener("change", refresh);
+            document.getElementById("closeStatement").onclick = closeModal;
+            document.getElementById("downloadStatement").onclick = () => downloadStatement(period.value);
+            document.getElementById("printStatement").onclick = () => printStatement(period.value);
+            refresh();
+        }
+        function renderStatementSummary(period) {
+            const data = getStatementData(period);
+            document.getElementById("statementSummary").innerHTML = [
+                ["Opening balance", money(data.opening)], ["Money in", money(data.credits)], ["Money out", money(data.debits)], ["Closing balance", money(data.closing)], ["Transactions", String(data.rows.length)], ["Wallet balance now", money(state.balance)]
+            ].map(([label,value]) => `<div class="rounded-xl bg-white/[0.03] border border-white/10 p-3"><p class="text-[10px] text-slate-400">${label}</p><p class="text-sm font-bold text-white mt-1">${escapeHTML(value)}</p></div>`).join("");
+        }
+        function statementCSV(period) {
+            const data = getStatementData(period);
+            const quote = value => `"${String(value ?? "").replace(/"/g, '""')}"`;
+            let running = data.opening;
+            const lines = [["Date","Reference","Description","Type","Debit","Credit","Status","Running Balance"].map(quote).join(",")];
+            for (const tx of data.rows) {
+                running = roundMoney(running + Number(tx.amount));
+                lines.push([prettyDate(tx.date), tx.reference || tx.id, tx.title, tx.type, Number(tx.amount) < 0 ? Math.abs(Number(tx.amount)).toFixed(2) : "0.00", Number(tx.amount) > 0 ? Number(tx.amount).toFixed(2) : "0.00", tx.status || "Completed", running.toFixed(2)].map(quote).join(","));
+            }
+            lines.push(["","","Closing balance","","","","",data.closing.toFixed(2)].map(quote).join(","));
+            return lines.join("\r\n");
+        }
+        function downloadStatement(period) {
+            downloadText(`ApexPay-Statement-${period}-${new Date().toISOString().slice(0,10)}.csv`, statementCSV(period), "text/csv;charset=utf-8");
+            showToast("Statement exported.");
+        }
+        function printStatement(period) {
+            const data = getStatementData(period);
+            let running = data.opening;
+            const rows = data.rows.map(tx => {
+                running = roundMoney(running + Number(tx.amount));
+                return `<tr><td>${escapeHTML(prettyDate(tx.date))}</td><td>${escapeHTML(tx.reference || tx.id)}</td><td>${escapeHTML(tx.title)}</td><td>${Number(tx.amount) < 0 ? money(Math.abs(Number(tx.amount))) : "—"}</td><td>${Number(tx.amount) > 0 ? money(Number(tx.amount)) : "—"}</td><td>${money(running)}</td></tr>`;
+            }).join("");
+            printContent(`<h1 style="font-size:24px;font-weight:700">ApexPay</h1><p class="print-muted">Account statement · ${escapeHTML(periodLabel(period))}</p><p style="margin-top:18px">Account holder: ${escapeHTML(state.accountHolder)}</p><p>Opening balance: ${money(data.opening)} · Closing balance: ${money(data.closing)}</p><table><thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>${rows}</tbody></table><p class="print-muted" style="margin-top:28px">Academic project statement. Wallet records are stored locally in this browser.</p>`);
+        }
+        function periodLabel(period) { return ({ all: "All recorded activity", month: "Current month", "30days": "Last 30 days" })[period] || period; }
+        function printContent(content) {
+            const root = document.getElementById("printRoot");
+            root.innerHTML = content;
+            window.print();
+            setTimeout(() => { root.innerHTML = ""; }, 500);
+        }
+        function downloadText(filename, text, type = "text/plain;charset=utf-8") {
+            const blob = new Blob([text], { type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url; link.download = filename; document.body.appendChild(link); link.click(); link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        // --- HARVEY AI: secure Cloudflare proxy, with the current local wallet ledger ---
+        async function handleHarveySubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById("harveyInput");
             const question = input.value.trim();
             if (!question) return;
-
-            appendHarveyMessage(question, 'user');
-            input.value = '';
+            appendHarveyMessage(question, "user");
+            input.value = "";
             const submitButton = document.querySelector('#harveyForm button[type="submit"]');
             if (submitButton) submitButton.disabled = true;
             const typingId = showHarveyTyping();
-
             try {
-                const aiResponse = await fetchGeminiResponse(question);
+                const answer = await fetchGeminiResponse(question);
                 removeHarveyTyping(typingId);
-                appendHarveyMessage(aiResponse, 'ai');
-                speakText(aiResponse);
-            } catch (err) {
-                console.error('HARVEY request failed:', err);
+                appendHarveyMessage(answer, "ai");
+                speakText(answer);
+            } catch (error) {
+                console.error("HARVEY request failed:", error);
                 removeHarveyTyping(typingId);
-                const fallbackReply = getSmartFallbackResponse(question, err.message);
-                appendHarveyMessage(fallbackReply, 'ai');
-                speakText(fallbackReply);
+                appendHarveyMessage(`I'm unable to complete that request right now. ${error.message}`, "ai");
             } finally {
                 if (submitButton) submitButton.disabled = false;
                 input.focus();
             }
         }
-
         function sendQuickPrompt(text) {
-            const form = document.getElementById('harveyForm');
-            document.getElementById('harveyInput').value = text;
-            form.requestSubmit();
+            document.getElementById("harveyInput").value = text;
+            document.getElementById("harveyForm").requestSubmit();
         }
-
-        async function fetchGeminiResponse(userQuestion) {
-            if (HARVEY_API_URL.includes('YOUR-WORKER-NAME')) {
-                throw new Error('Set HARVEY_API_URL in index.html to your deployed Cloudflare Worker URL.');
-            }
-
+        async function fetchGeminiResponse(question) {
             const accountContext = {
-                accountHolder: 'Alex Morgan',
+                accountHolder: state.accountHolder,
                 balance: state.balance,
+                currency: state.currency,
                 pensionReceived: state.pensionReceived,
-                transactions: state.transactions.slice(0, 4).map(tx => ({
-                    title: tx.title,
-                    amount: tx.amount,
-                    type: tx.type
-                }))
+                transactions: state.transactions.slice(0, 10).map(tx => ({ id: tx.id, title: tx.title, subtitle: tx.subtitle, amount: tx.amount, type: tx.type, date: tx.date, status: tx.status, reference: tx.reference })),
+                paymentRequests: state.requests.slice(0, 8).map(item => ({ id: item.id, name: item.name, amount: item.amount, status: item.status, createdAt: item.createdAt, note: item.note }))
             };
-
             const response = await fetch(HARVEY_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: userQuestion, accountContext })
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question, accountContext })
             });
-
             const data = await response.json().catch(() => ({}));
-            if (!response.ok) {
-                throw new Error(data.error || `HARVEY service returned HTTP ${response.status}.`);
-            }
-            if (typeof data.reply !== 'string' || !data.reply.trim()) {
-                throw new Error('HARVEY service returned an empty answer.');
-            }
+            if (!response.ok) throw new Error(data.error || `HARVEY service returned HTTP ${response.status}.`);
+            if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("HARVEY returned an empty answer.");
             return data.reply.trim();
         }
-
-        function getSmartFallbackResponse(q, errorMessage = '') {
-            const lower = q.toLowerCase();
-            if (lower.includes('pension')) {
-                return `According to this demo account's sample data, the $4,000.00 SSS pension is marked as received today at 8:00 AM. ${errorMessage ? 'The AI service is currently unavailable.' : ''}`.trim();
-            }
-            if (lower.includes('balance') || lower.includes('money') || lower.includes('how much')) {
-                return `The balance shown in this demo is $${state.balance.toFixed(2)}. This is sample app data, not a live bank balance. ${errorMessage ? 'The AI service is currently unavailable.' : ''}`.trim();
-            }
-            if (lower.includes('playstation') || lower.includes('ps5')) {
-                return 'I cannot check current PlayStation prices while the AI service is unavailable. Please try again when HARVEY reconnects.';
-            }
-            return `HARVEY could not connect to its AI service. ${errorMessage || 'Please check the Worker URL and server configuration, then try again.'}`;
-        }
-
         function startVoiceInput() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Voice recognition is not supported in this browser. Please use Google Chrome.");
-                return;
+            if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+                showToast("Voice recognition is not supported in this browser. Please use Chrome.", "error"); return;
             }
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
-            recognition.onstart = () => { document.getElementById('harveyInput').placeholder = "Listening..."; };
-            recognition.onresult = (event) => {
-                const speechToText = event.results[0][0].transcript;
-                document.getElementById('harveyInput').value = speechToText;
-                document.getElementById('harveyForm').dispatchEvent(new Event('submit', { cancelable: true }));
-            };
-            recognition.onerror = () => { document.getElementById('harveyInput').placeholder = "Ask HARVEY anything..."; };
-            recognition.onend = () => { document.getElementById('harveyInput').placeholder = "Ask HARVEY anything..."; };
+            recognition.lang = "en-US";
+            recognition.onstart = () => { document.getElementById("harveyInput").placeholder = "Listening..."; };
+            recognition.onresult = event => { document.getElementById("harveyInput").value = event.results[0][0].transcript; document.getElementById("harveyForm").requestSubmit(); };
+            recognition.onerror = () => { document.getElementById("harveyInput").placeholder = "Ask HARVEY anything..."; };
+            recognition.onend = () => { document.getElementById("harveyInput").placeholder = "Ask HARVEY anything..."; };
             recognition.start();
         }
-
         function speakText(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                window.speechSynthesis.speak(utterance);
-            }
+            if (!("speechSynthesis" in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1; utterance.pitch = 1;
+            window.speechSynthesis.speak(utterance);
         }
-
         function appendHarveyMessage(text, sender) {
-            const feed = document.getElementById('harveyChatFeed');
-            const isUser = sender === 'user';
-            const row = document.createElement('div');
-            row.className = `flex items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
-
-            const avatar = document.createElement('div');
-            avatar.className = isUser
-                ? 'w-7 h-7 rounded-lg bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold'
-                : 'w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]';
-            if (isUser) {
-                avatar.textContent = 'AM';
-            } else {
-                const brainIcon = document.createElement('i');
-                brainIcon.className = 'fa-solid fa-brain';
-                avatar.appendChild(brainIcon);
-            }
-
-            const bubble = document.createElement('div');
-            bubble.className = `glass-panel p-3 rounded-2xl ${isUser ? 'rounded-tr-none bg-brand-600/20' : 'rounded-tl-none'} max-w-[85%] text-slate-200 leading-relaxed shadow-sm whitespace-pre-wrap break-words`;
-            bubble.textContent = String(text ?? '');
-
-            row.appendChild(avatar);
-            row.appendChild(bubble);
-            feed.appendChild(row);
-            feed.scrollTop = feed.scrollHeight;
+            const feed = document.getElementById("harveyChatFeed");
+            const isUser = sender === "user";
+            const row = document.createElement("div");
+            row.className = `flex items-start space-x-2.5 ${isUser ? "flex-row-reverse space-x-reverse" : ""}`;
+            const avatar = document.createElement("div");
+            avatar.className = isUser ? "w-7 h-7 rounded-lg bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold" : "w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]";
+            avatar.textContent = isUser ? "AM" : "";
+            if (!isUser) { const icon = document.createElement("i"); icon.className = "fa-solid fa-brain"; avatar.appendChild(icon); }
+            const bubble = document.createElement("div");
+            bubble.className = `glass-panel p-3 rounded-2xl ${isUser ? "rounded-tr-none bg-brand-600/20" : "rounded-tl-none"} max-w-[85%] text-slate-200 leading-relaxed shadow-sm whitespace-pre-wrap break-words`;
+            bubble.textContent = String(text ?? "");
+            row.append(avatar, bubble); feed.appendChild(row); feed.scrollTop = feed.scrollHeight;
         }
-
         function showHarveyTyping() {
-            const feed = document.getElementById('harveyChatFeed');
-            const id = 'typing-' + Date.now();
-            const row = document.createElement('div');
-            row.id = id;
-            row.className = `flex items-start space-x-2.5`;
-            row.innerHTML = `
-                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div>
-                <div class="glass-panel p-3 rounded-2xl rounded-tl-none text-slate-400 text-xs italic flex items-center space-x-1.5">
-                    <span>Harvey is analyzing ledger</span>
-                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce"></span>
-                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                    <span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
-                </div>
-            `;
-            feed.appendChild(row);
-            feed.scrollTop = feed.scrollHeight;
-            return id;
+            const feed = document.getElementById("harveyChatFeed");
+            const id = "typing-" + Date.now();
+            const row = document.createElement("div"); row.id = id; row.className = "flex items-start space-x-2.5";
+            row.innerHTML = `<div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div><div class="glass-panel p-3 rounded-2xl rounded-tl-none text-slate-400 text-xs italic flex items-center space-x-1.5"><span>HARVEY is preparing a response</span><span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce"></span><span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span><span class="w-1 h-1 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span></div>`;
+            feed.appendChild(row); feed.scrollTop = feed.scrollHeight; return id;
         }
-
-        function removeHarveyTyping(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        }
-
+        function removeHarveyTyping(id) { document.getElementById(id)?.remove(); }
         function clearHarveyChat() {
-            document.getElementById('harveyChatFeed').innerHTML = `
-                <div class="flex items-start space-x-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div>
-                    <div class="glass-panel p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200 leading-relaxed shadow-sm">
-                        Chat reset. How else can I help secure your account today?
-                    </div>
-                </div>
-            `;
+            document.getElementById("harveyChatFeed").innerHTML = `<div class="flex items-start space-x-2.5"><div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-brain"></i></div><div class="glass-panel p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200 leading-relaxed shadow-sm">Chat cleared. How can I help with your ApexPay wallet?</div></div>`;
         }
 
         function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration note:', err));
-            }
+            if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(error => console.log("Service worker note:", error));
         }
-
-        let deferredPrompt;
         function initPWAInstall() {
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                const installBtn = document.getElementById('installAppBtn');
-                if (installBtn) {
-                    installBtn.classList.remove('hidden');
-                    installBtn.classList.add('flex');
-                    installBtn.addEventListener('click', async () => {
-                        deferredPrompt.prompt();
-                        const { outcome } = await deferredPrompt.userChoice;
-                        if (outcome === 'accepted') installBtn.classList.add('hidden');
-                        deferredPrompt = null;
-                    });
-                }
+            window.addEventListener("beforeinstallprompt", event => {
+                event.preventDefault(); deferredPrompt = event;
+                const button = document.getElementById("installAppBtn");
+                if (!button) return;
+                button.classList.remove("hidden"); button.classList.add("flex");
+                button.addEventListener("click", async () => {
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    const choice = await deferredPrompt.userChoice;
+                    if (choice.outcome === "accepted") button.classList.add("hidden");
+                    deferredPrompt = null;
+                });
             });
         }
-    </script>
+        </script>
 </body>
 </html>
