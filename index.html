@@ -181,7 +181,7 @@
                     <div>
                         <div class="flex items-center space-x-1.5">
                             <h3 class="font-bold text-sm text-white">HARVEY Voice & AI Guide</h3>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">v2.5</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">v2.6</span>
                         </div>
                         <p class="text-[10px] text-slate-400">Risk Verification & Banking Assistant</p>
                     </div>
@@ -313,7 +313,6 @@
         }
 
         async function fetchGeminiResponse(userQuestion) {
-            // Connected to your Cloudflare Worker Proxy
             const workerUrl = `https://jolly-sunset-ab93.lukepaclibar24.workers.dev?key=${GEMINI_API_KEY}`;
             
             const prompt = `
