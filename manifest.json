@@ -1,0 +1,17 @@
+{
+  "name": "ApexPay Digital Banking",
+  "short_name": "ApexPay",
+  "description": "Secure E-Wallet & HARVEY AI Financial Assistant",
+  "start_url": "/harvey-banking-app/",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2830/2830284.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
