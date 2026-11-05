@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ApexBank E-Wallet & HARVEY AI</title>
+    <!-- PWA Manifest & Meta -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b0f19">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830284.png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -484,7 +488,6 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        // API KEY SPLIT TO BYPASS GITHUB SECRET SCANNING
         const GEMINI_API_KEY = "AQ.Ab8RN6K" + "saurJ06RTRhVWin-nIFcSqzhpa7o5l1OIQtOlGdueFg";
 
         const state = {
@@ -548,6 +551,11 @@
             renderTransactions(state.transactions);
             updateBalanceUI();
             setupVoiceRecognition();
+            
+            // Register PWA Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js');
+            }
         });
 
         function updateBalanceUI() {
