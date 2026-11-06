@@ -167,9 +167,10 @@
                         <p class="text-[10px] text-slate-400">Risk Verification & Banking Assistant</p>
                     </div>
                 </div>
-                <button onclick="clearHarveyChat()" class="text-slate-400 hover:text-white transition text-xs p-1" title="Clear Chat">
-                    <i class="fa-solid fa-rotate-right"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button id="harveyVoiceToggle" onclick="toggleHarveyVoice()" class="text-emerald-300 hover:text-white transition text-xs p-1" title="Toggle spoken replies" aria-pressed="true"><i class="fa-solid fa-volume-high"></i></button>
+                    <button onclick="clearHarveyChat()" class="text-slate-400 hover:text-white transition text-xs p-1" title="Clear Chat"><i class="fa-solid fa-rotate-right"></i></button>
+                </div>
             </div>
 
             <div id="harveyChatFeed" class="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar text-xs">
@@ -183,6 +184,7 @@
                 </div>
             </div>
 
+            <div class="px-4 py-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400"><span id="harveyVoiceStatus">Voice replies on · Tap microphone to speak</span><button type="button" onclick="stopHarveySpeech()" class="hover:text-white">Stop voice</button></div>
             <div class="px-4 py-2 border-t border-white/5 flex gap-1.5 overflow-x-auto custom-scrollbar text-[11px]">
                 <button onclick="sendQuickPrompt('Did my pension come in?')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">Did my pension come in?</button>
                 <button onclick="sendQuickPrompt('What is my balance?')" class="whitespace-nowrap px-2.5 py-1 rounded-full glass-panel hover:bg-brand-600/30 text-slate-300 transition">What is my balance?</button>
@@ -280,6 +282,7 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             updateWalletUI();
+            syncHarveyVoiceUI();
             registerServiceWorker();
             initPWAInstall();
             document.getElementById("modalClose").addEventListener("click", closeModal);
@@ -418,10 +421,66 @@
                 if (!Number.isFinite(amount) || amount <= 0 || amount > MAX_TRANSACTION) return showToast("Enter a valid amount up to $1,000,000.", "error");
                 if (amount > state.balance) return showToast("Insufficient available balance for this transfer.", "error");
                 pendingAction = { type: "send", name: String(data.get("recipientName")).trim(), contact: String(data.get("recipientContact")).trim(), amount, note: String(data.get("note") || "").trim() };
-                showConfirmation("Confirm transfer", "Check the transfer details before completing.", [
-                    ["Recipient", pendingAction.name], ["Destination", pendingAction.contact], ["Amount", money(amount)], ["Note", pendingAction.note || "—"]
-                ]);
+                const assessment = assessTransferRisk(pendingAction);
+                if (assessment.requiresReview) return openRiskQuestionnaire(pendingAction, assessment);
+                showTransferConfirmation(pendingAction, assessment);
             });
+        }
+
+        // HARVEY risk verification: deterministic rules, not an AI guess.
+        function assessTransferRisk(action) {
+            const normalized = value => String(value || "").trim().toLowerCase();
+            const prior = state.transactions.filter(tx => tx.category === "transfer" && Number(tx.amount) < 0);
+            const known = prior.some(tx => normalized(tx.subtitle) === normalized(action.contact) || normalized(tx.title.replace(/^Transfer to\s+/i, "")) === normalized(action.name));
+            const outgoing = prior.map(tx => Math.abs(Number(tx.amount) || 0));
+            const average = outgoing.length ? outgoing.reduce((a,b)=>a+b,0)/outgoing.length : 0;
+            const largeThreshold = Math.max(2500, state.balance * 0.25);
+            const unusuallyLarge = action.amount >= largeThreshold || (average > 0 && action.amount >= average * 2.5);
+            const reasons = [];
+            if (!known) reasons.push("This is the first recorded transfer to this recipient.");
+            if (unusuallyLarge) reasons.push(`The amount (${money(action.amount)}) is unusually large compared with this wallet's balance or prior transfers.`);
+            return { knownRecipient: known, unusuallyLarge, requiresReview: !known || unusuallyLarge, reasons, score: (!known ? 35 : 0) + (unusuallyLarge ? 45 : 0) };
+        }
+        function openRiskQuestionnaire(action, assessment) {
+            const reasons = assessment.reasons.map(reason => `<li class="mb-1">${escapeHTML(reason)}</li>`).join("");
+            showModal("HARVEY · Transfer safety check", "A quick risk check before you send money.", `
+                <div class="rounded-xl border border-amber-400/30 bg-amber-500/10 p-3 text-xs text-amber-100"><strong><i class="fa-solid fa-shield-halved mr-1"></i> Review recommended</strong><ul class="list-disc pl-5 mt-2">${reasons}</ul></div>
+                <form id="riskCheckForm" class="space-y-3 mt-4">
+                  <label class="block"><span class="wallet-label">Do you personally know and trust this recipient?</span><select class="wallet-field" name="trust" required><option value="">Choose an answer</option><option value="yes">Yes, I know them</option><option value="no">No, I do not know them</option><option value="unsure">I'm not sure</option></select></label>
+                  <label class="block"><span class="wallet-label">Did anyone pressure you to send this money urgently?</span><select class="wallet-field" name="pressure" required><option value="">Choose an answer</option><option value="no">No</option><option value="yes">Yes</option></select></label>
+                  <label class="block"><span class="wallet-label">Did the recipient ask for your PIN, password, or one-time code?</span><select class="wallet-field" name="secret" required><option value="">Choose an answer</option><option value="no">No</option><option value="yes">Yes</option></select></label>
+                  <div class="flex justify-end gap-2"><button type="button" id="riskCancel" class="wallet-secondary">Cancel transfer</button><button type="submit" class="wallet-primary">Assess risk</button></div>
+                </form>` , "HARVEY risk verification");
+            document.getElementById("riskCancel").onclick = () => { pendingAction = null; closeModal(); showToast("Transfer cancelled. No money was moved."); };
+            document.getElementById("riskCheckForm").addEventListener("submit", event => {
+                event.preventDefault();
+                const answers = Object.fromEntries(new FormData(event.currentTarget).entries());
+                let score = assessment.score;
+                if (answers.trust === "no") score += 20;
+                if (answers.trust === "unsure") score += 10;
+                if (answers.pressure === "yes") score += 25;
+                if (answers.secret === "yes") score += 100;
+                score = Math.min(100, score);
+                const level = score >= 70 ? "High risk" : score >= 40 ? "Elevated risk" : "Review completed";
+                const advice = answers.secret === "yes"
+                  ? "Do not proceed. Legitimate support staff should never ask for your PIN, password, or one-time code. HARVEY recommends cancelling this transfer."
+                  : answers.pressure === "yes"
+                    ? "Pause and independently verify the recipient using a trusted contact method before sending. Urgency and pressure are common scam tactics."
+                    : score >= 40
+                      ? "Verify the recipient and payment purpose independently before proceeding. Never share security codes."
+                      : "No additional questionnaire warning was identified, but always verify recipient details.";
+                pendingAction.riskAssessment = { score, level, answers, reasons: assessment.reasons };
+                const canProceed = answers.secret !== "yes";
+                showModal("HARVEY risk assessment", `${level} · Risk score ${score}/100`, `<div class="rounded-xl border ${score>=70?'border-rose-400/30 bg-rose-500/10':'border-amber-400/30 bg-amber-500/10'} p-4"><p class="text-white font-bold text-sm mb-2">${escapeHTML(level)}</p><p class="text-xs text-slate-200">${escapeHTML(advice)}</p><p class="text-[10px] text-slate-400 mt-3">Risk score is a project rule-based indicator, not a guarantee or formal fraud determination.</p></div><div class="flex justify-end gap-2 mt-5"><button id="riskStop" class="wallet-secondary">Cancel transfer</button>${canProceed?'<button id="riskContinue" class="wallet-primary">I understand · Review transfer</button>':''}</div>`, "HARVEY risk verification");
+                document.getElementById("riskStop").onclick = () => { pendingAction = null; closeModal(); showToast("Transfer cancelled. No money was moved."); };
+                if (canProceed) document.getElementById("riskContinue").onclick = () => showTransferConfirmation(pendingAction, { ...assessment, score, level, advice });
+                if (answers.secret === "yes") speakText(advice);
+            });
+        }
+        function showTransferConfirmation(action, assessment) {
+            const rows = [["Recipient", action.name], ["Destination", action.contact], ["Amount", money(action.amount)], ["Note", action.note || "—"]];
+            if (action.riskAssessment) rows.push(["HARVEY risk", `${action.riskAssessment.level} (${action.riskAssessment.score}/100)`]);
+            showConfirmation("Confirm transfer", "Check the transfer details before completing.", rows);
         }
 
         function openRequestForm() {
@@ -489,6 +548,7 @@
                 if (action.amount > state.balance) return showToast("Your balance changed. The transfer was not completed.", "error");
                 state.balance = roundMoney(state.balance - action.amount);
                 const tx = pushTransaction({ title: `Transfer to ${action.name}`, subtitle: action.contact, amount: -action.amount, type: "debit", category: "transfer", reference: makeId("TRF") });
+                if (action.riskAssessment) { tx.riskScore = action.riskAssessment.score; tx.riskLevel = action.riskAssessment.level; tx.riskReasons = action.riskAssessment.reasons; }
                 receipt = { title: "Transfer completed", status: "Completed", id: tx.id, date: tx.date, amount: action.amount, direction: "Sent", counterparty: action.name, contact: action.contact, note: action.note, reference: tx.reference };
             } else if (action.type === "deposit") {
                 state.balance = roundMoney(state.balance + action.amount);
@@ -648,7 +708,7 @@
                 balance: state.balance,
                 currency: state.currency,
                 pensionReceived: state.pensionReceived,
-                transactions: state.transactions.slice(0, 10).map(tx => ({ id: tx.id, title: tx.title, subtitle: tx.subtitle, amount: tx.amount, type: tx.type, date: tx.date, status: tx.status, reference: tx.reference })),
+                transactions: state.transactions.slice(0, 10).map(tx => ({ id: tx.id, title: tx.title, subtitle: tx.subtitle, amount: tx.amount, type: tx.type, date: tx.date, status: tx.status, reference: tx.reference, riskScore: tx.riskScore, riskLevel: tx.riskLevel, riskReasons: tx.riskReasons })),
                 paymentRequests: state.requests.slice(0, 8).map(item => ({ id: item.id, name: item.name, amount: item.amount, status: item.status, createdAt: item.createdAt, note: item.note }))
             };
             const response = await fetch(HARVEY_API_URL, {
@@ -666,18 +726,29 @@
             }
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
-            recognition.lang = "en-US";
+            recognition.lang = "en-PH";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
             recognition.onstart = () => { document.getElementById("harveyInput").placeholder = "Listening..."; };
             recognition.onresult = event => { document.getElementById("harveyInput").value = event.results[0][0].transcript; document.getElementById("harveyForm").requestSubmit(); };
             recognition.onerror = () => { document.getElementById("harveyInput").placeholder = "Ask HARVEY anything..."; };
             recognition.onend = () => { document.getElementById("harveyInput").placeholder = "Ask HARVEY anything..."; };
             recognition.start();
         }
+        let harveyVoiceEnabled = localStorage.getItem("apexpay.harvey.voice") !== "off";
+        function syncHarveyVoiceUI() {
+            const button = document.getElementById("harveyVoiceToggle");
+            const status = document.getElementById("harveyVoiceStatus");
+            if (button) { button.setAttribute("aria-pressed", String(harveyVoiceEnabled)); button.innerHTML = `<i class="fa-solid ${harveyVoiceEnabled ? "fa-volume-high" : "fa-volume-xmark"}"></i>`; button.classList.toggle("text-emerald-300", harveyVoiceEnabled); button.classList.toggle("text-slate-500", !harveyVoiceEnabled); }
+            if (status) status.textContent = harveyVoiceEnabled ? "Voice replies on · Tap microphone to speak" : "Text replies only · Voice replies off";
+        }
+        function toggleHarveyVoice() { harveyVoiceEnabled = !harveyVoiceEnabled; localStorage.setItem("apexpay.harvey.voice", harveyVoiceEnabled ? "on" : "off"); if (!harveyVoiceEnabled) stopHarveySpeech(); syncHarveyVoiceUI(); showToast(harveyVoiceEnabled ? "HARVEY voice replies enabled." : "HARVEY voice replies disabled."); }
+        function stopHarveySpeech() { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); }
         function speakText(text) {
-            if (!("speechSynthesis" in window)) return;
+            if (!harveyVoiceEnabled || !("speechSynthesis" in window)) return;
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1; utterance.pitch = 1;
+            utterance.lang = "en-PH"; utterance.rate = 1; utterance.pitch = 1;
             window.speechSynthesis.speak(utterance);
         }
         function appendHarveyMessage(text, sender) {
